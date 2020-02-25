@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,6 +34,9 @@ public class ProductCategory implements Serializable {
 	/**类型编码*/
 	@Excel(name = "类型编码", width = 15)
 	private String code;
+	@Excel(name = "分类图", width = 15)
+	@ApiModelProperty(value = "分类图")
+	private String image;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
 	private String createBy;

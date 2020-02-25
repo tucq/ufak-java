@@ -13,6 +13,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.FileUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -140,6 +141,7 @@ public class ProductCategoryController {
        }else {
            boolean ok = productCategoryService.removeById(id);
            if(ok) {
+               FileUtil.delete(productCategory.getImage());//删除文件
                result.success("删除成功!");
            }
        }

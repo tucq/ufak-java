@@ -48,7 +48,7 @@ public class ProductCategoryServiceImpl extends ServiceImpl<ProductCategoryMappe
 		//update-begin--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
 		JSONObject formData = new JSONObject();
 		formData.put("pid",categoryPid);
-		categoryCode = (String) FillRuleUtil.executeRule("category_code_rule",formData);
+		categoryCode = (String) FillRuleUtil.executeRule("product_category_code_rule",formData);
 		//update-end--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
 		productCategory.setCode(categoryCode);
 		productCategory.setPid(categoryPid);
