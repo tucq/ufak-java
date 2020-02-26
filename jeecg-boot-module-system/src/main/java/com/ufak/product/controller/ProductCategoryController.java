@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.common.FileUtil;
 import com.ufak.product.entity.ProductCategory;
 import com.ufak.product.service.IProductCategoryService;
+import com.ufak.product.service.IProductInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.FileUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 public class ProductCategoryController {
    @Autowired
    private IProductCategoryService productCategoryService;
+    @Autowired
+    private IProductInfoService productInfoService;
 
    /**
      * 分页列表查询
@@ -139,6 +142,20 @@ public class ProductCategoryController {
        if(productCategory==null) {
            result.error500("未找到对应实体");
        }else {
+           QueryWrapper qw2 = new QueryWrapper();
+           qw2.eq("pid",id);
+           int count2 = productCategoryService.count(qw2);
+           if(count2 > 0){
+               return result.error500("该分类有子类，不允许删除！");
+           }
+
+           QueryWrapper qw = new QueryWrapper();
+           qw.eq("product_type",id);
+           int count = productInfoService.count(qw);
+           if(count > 0){
+               return result.error500("该分类已被商品信息关联，不允许删除！");
+           }
+
            boolean ok = productCategoryService.removeById(id);
            if(ok) {
                FileUtil.delete(productCategory.getImage());//删除文件
