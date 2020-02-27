@@ -54,8 +54,9 @@ public class CommonController {
 	
 	@PostMapping(value = "/upload")
 	public Result<?> upload(HttpServletRequest request, HttpServletResponse response) {
-		Result<?> result = new Result<>();
+		Result<String> result = new Result<>();
 		try {
+			String index = request.getParameter("index");
 			String ctxPath = uploadpath;
 			String fileName = null;
 			String bizPath = "files";
@@ -75,6 +76,7 @@ public class CommonController {
 			if (dbpath.contains("\\")) {
 				dbpath = dbpath.replace("\\", "/");
 			}
+			result.setResult(index);
 			result.setMessage(dbpath);
 			result.setSuccess(true);
 		} catch (IOException e) {
