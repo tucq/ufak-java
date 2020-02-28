@@ -11,4 +11,6 @@ import com.ufak.product.entity.ProductInfo;
  */
 public interface IProductInfoService extends IService<ProductInfo> {
 
+    void saveProductInfo(ProductInfo productInfo);
+
 }

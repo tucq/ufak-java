@@ -3,8 +3,8 @@ package com.ufak.product.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ufak.product.entity.ProductInfo;
-import com.ufak.product.service.IProductInfoService;
+import com.ufak.product.entity.ProductSpecs;
+import com.ufak.product.service.IProductSpecsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,66 +21,66 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
  /**
- * @Description: 商品信息
+ * @Description: 商品规格
  * @Author: jeecg-boot
- * @Date:   2020-02-24
+ * @Date:   2020-02-28
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags="商品信息")
+@Api(tags="商品规格")
 @RestController
-@RequestMapping("/product/info")
-public class ProductInfoController extends JeecgController<ProductInfo, IProductInfoService> {
+@RequestMapping("/product/specs")
+public class ProductSpecsController extends JeecgController<ProductSpecs, IProductSpecsService> {
 	@Autowired
-	private IProductInfoService productInfoService;
+	private IProductSpecsService productSpecsService;
 	
 	/**
 	 * 分页列表查询
 	 *
-	 * @param productInfo
+	 * @param productSpecs
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-分页列表查询")
-	@ApiOperation(value="商品信息-分页列表查询", notes="商品信息-分页列表查询")
+	@AutoLog(value = "商品规格-分页列表查询")
+	@ApiOperation(value="商品规格-分页列表查询", notes="商品规格-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(ProductInfo productInfo,
+	public Result<?> queryPageList(ProductSpecs productSpecs,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ProductInfo> queryWrapper = QueryGenerator.initQueryWrapper(productInfo, req.getParameterMap());
-		Page<ProductInfo> page = new Page<ProductInfo>(pageNo, pageSize);
-		IPage<ProductInfo> pageList = productInfoService.page(page, queryWrapper);
+		QueryWrapper<ProductSpecs> queryWrapper = QueryGenerator.initQueryWrapper(productSpecs, req.getParameterMap());
+		Page<ProductSpecs> page = new Page<ProductSpecs>(pageNo, pageSize);
+		IPage<ProductSpecs> pageList = productSpecsService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
 	
 	/**
 	 * 添加
 	 *
-	 * @param productInfo
+	 * @param productSpecs
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-添加")
-	@ApiOperation(value="商品信息-添加", notes="商品信息-添加")
+	@AutoLog(value = "商品规格-添加")
+	@ApiOperation(value="商品规格-添加", notes="商品规格-添加")
 	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody ProductInfo productInfo) {
-		productInfoService.saveProductInfo(productInfo);
+	public Result<?> add(@RequestBody ProductSpecs productSpecs) {
+		productSpecsService.save(productSpecs);
 		return Result.ok("添加成功！");
 	}
 	
 	/**
 	 * 编辑
 	 *
-	 * @param productInfo
+	 * @param productSpecs
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-编辑")
-	@ApiOperation(value="商品信息-编辑", notes="商品信息-编辑")
+	@AutoLog(value = "商品规格-编辑")
+	@ApiOperation(value="商品规格-编辑", notes="商品规格-编辑")
 	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody ProductInfo productInfo) {
-		productInfoService.updateById(productInfo);
+	public Result<?> edit(@RequestBody ProductSpecs productSpecs) {
+		productSpecsService.updateById(productSpecs);
 		return Result.ok("编辑成功!");
 	}
 	
@@ -90,11 +90,11 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-通过id删除")
-	@ApiOperation(value="商品信息-通过id删除", notes="商品信息-通过id删除")
+	@AutoLog(value = "商品规格-通过id删除")
+	@ApiOperation(value="商品规格-通过id删除", notes="商品规格-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		productInfoService.removeById(id);
+		productSpecsService.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
@@ -104,11 +104,11 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-批量删除")
-	@ApiOperation(value="商品信息-批量删除", notes="商品信息-批量删除")
+	@AutoLog(value = "商品规格-批量删除")
+	@ApiOperation(value="商品规格-批量删除", notes="商品规格-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.productInfoService.removeByIds(Arrays.asList(ids.split(",")));
+		this.productSpecsService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
 	
@@ -118,23 +118,23 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-通过id查询")
-	@ApiOperation(value="商品信息-通过id查询", notes="商品信息-通过id查询")
+	@AutoLog(value = "商品规格-通过id查询")
+	@ApiOperation(value="商品规格-通过id查询", notes="商品规格-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		ProductInfo productInfo = productInfoService.getById(id);
-		return Result.ok(productInfo);
+		ProductSpecs productSpecs = productSpecsService.getById(id);
+		return Result.ok(productSpecs);
 	}
 
   /**
    * 导出excel
    *
    * @param request
-   * @param productInfo
+   * @param productSpecs
    */
   @RequestMapping(value = "/exportXls")
-  public ModelAndView exportXls(HttpServletRequest request, ProductInfo productInfo) {
-      return super.exportXls(request, productInfo, ProductInfo.class, "商品信息");
+  public ModelAndView exportXls(HttpServletRequest request, ProductSpecs productSpecs) {
+      return super.exportXls(request, productSpecs, ProductSpecs.class, "商品规格");
   }
 
   /**
@@ -146,7 +146,7 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
    */
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
   public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-      return super.importExcel(request, response, ProductInfo.class);
+      return super.importExcel(request, response, ProductSpecs.class);
   }
 
 }
