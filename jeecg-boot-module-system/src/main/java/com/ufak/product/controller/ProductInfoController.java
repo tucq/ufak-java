@@ -80,7 +80,7 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@ApiOperation(value="商品信息-编辑", notes="商品信息-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ProductInfo productInfo) {
-		productInfoService.updateById(productInfo);
+		productInfoService.updateProductInfo(productInfo);
 		return Result.ok("编辑成功!");
 	}
 	

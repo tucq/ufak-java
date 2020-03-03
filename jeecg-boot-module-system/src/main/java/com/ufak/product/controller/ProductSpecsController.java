@@ -8,6 +8,7 @@ import com.ufak.product.service.IProductSpecsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -51,6 +52,10 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		QueryWrapper<ProductSpecs> queryWrapper = QueryGenerator.initQueryWrapper(productSpecs, req.getParameterMap());
+		String orderBy = req.getParameter("orderBy");
+		if(StringUtils.isNotEmpty(orderBy)){
+			queryWrapper.orderByAsc(orderBy);
+		}
 		Page<ProductSpecs> page = new Page<ProductSpecs>(pageNo, pageSize);
 		IPage<ProductSpecs> pageList = productSpecsService.page(page, queryWrapper);
 		return Result.ok(pageList);

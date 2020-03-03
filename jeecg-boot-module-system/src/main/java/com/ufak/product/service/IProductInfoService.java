@@ -11,6 +11,17 @@ import com.ufak.product.entity.ProductInfo;
  */
 public interface IProductInfoService extends IService<ProductInfo> {
 
+    /**
+     * 保存商品信息
+     * @param productInfo
+     */
     void saveProductInfo(ProductInfo productInfo);
+
+    /**
+     * 编辑商品信息
+     * @param productInfo
+     * @return
+     */
+    void updateProductInfo(ProductInfo productInfo);
 
 }

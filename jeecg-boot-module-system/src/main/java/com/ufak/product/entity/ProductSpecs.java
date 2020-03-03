@@ -43,6 +43,9 @@ public class ProductSpecs implements Serializable {
 	@Excel(name = "启停标识", width = 15)
 	@ApiModelProperty(value = "启停标识")
 	private String stats;
+	@Excel(name = "排序", width = 15)
+	@ApiModelProperty(value = "排序")
+	private int sort;
 	@Excel(name = "备注", width = 15)
 	@ApiModelProperty(value = "备注")
 	private String remark;
