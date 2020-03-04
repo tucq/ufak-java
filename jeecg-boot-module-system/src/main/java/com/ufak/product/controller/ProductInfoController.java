@@ -3,8 +3,11 @@ package com.ufak.product.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.common.FileUtil;
 import com.ufak.product.entity.ProductInfo;
+import com.ufak.product.entity.ProductSpecs;
 import com.ufak.product.service.IProductInfoService;
+import com.ufak.product.service.IProductSpecsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +22,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
- /**
+/**
  * @Description: 商品信息
  * @Author: jeecg-boot
  * @Date:   2020-02-24
@@ -33,6 +37,8 @@ import java.util.Arrays;
 public class ProductInfoController extends JeecgController<ProductInfo, IProductInfoService> {
 	@Autowired
 	private IProductInfoService productInfoService;
+	 @Autowired
+	 private IProductSpecsService productSpecsService;
 	
 	/**
 	 * 分页列表查询
@@ -94,7 +100,25 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@ApiOperation(value="商品信息-通过id删除", notes="商品信息-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		productInfoService.removeById(id);
+		ProductInfo pi = productInfoService.getById(id);
+		if(pi != null){
+			String url = pi.getImage() + pi.getDetailImages();
+			String[] urls = url.split(",");
+			for(int i = 0;i < urls.length; i++){
+				FileUtil.delete(urls[i]);// 删除图片
+			}
+
+			productInfoService.removeById(id);
+
+			QueryWrapper qw = new QueryWrapper();
+			qw.eq("product_id",id);
+			List<ProductSpecs> specsList = productSpecsService.list(qw);
+			for(ProductSpecs ps: specsList){
+				FileUtil.delete(ps.getSpecsImage());
+				productSpecsService.removeById(ps.getId());
+			}
+		}
+
 		return Result.ok("删除成功!");
 	}
 	
