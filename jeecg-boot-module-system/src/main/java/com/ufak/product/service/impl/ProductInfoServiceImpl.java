@@ -32,6 +32,23 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         insertProductSpecs(productInfo);
     }
 
+    @Override
+    public void updateProductInfo(ProductInfo productInfo) {
+        this.updateById(productInfo);
+        QueryWrapper qw = new QueryWrapper();
+        qw.eq("product_id",productInfo.getId());
+        productSpecsService.remove(qw);
+        insertProductSpecs(productInfo);
+
+        List<ProductSpecs> removeList = productInfo.getRemoveProductSpecsList();
+        for(ProductSpecs ps : removeList){
+            if(StringUtils.isNotEmpty(ps.getId())){
+                productSpecsService.removeById(ps.getId());
+            }
+        }
+
+    }
+
     private void insertProductSpecs(ProductInfo productInfo){
         String productId = productInfo.getId();
         List<ProductSpecs> list = productInfo.getProductSpecsList();
@@ -70,33 +87,7 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         }
     }
 
-    @Override
-    public void updateProductInfo(ProductInfo productInfo) {
-        this.updateById(productInfo);
-        QueryWrapper qw = new QueryWrapper();
-        qw.eq("product_id",productInfo.getId());
-        productSpecsService.remove(qw);
-        insertProductSpecs(productInfo);
-
-//        List<ProductSpecs> list = productInfo.getProductSpecsList();
-//        int sort = 0;
-//        for(ProductSpecs ps : list){
-//            sort ++;
-//            ps.setSort(sort);
-//            if(StringUtils.isNotEmpty(ps.getId())){
-//                productSpecsService.updateById(ps);
-//            }else{
-//                ps.setProductId(productInfo.getId());
-//                productSpecsService.save(ps);
-//            }
-//        }
-
-        List<ProductSpecs> removeList = productInfo.getRemoveProductSpecsList();
-        for(ProductSpecs ps : removeList){
-            if(StringUtils.isNotEmpty(ps.getId())){
-                productSpecsService.removeById(ps.getId());
-            }
-        }
+    private void savePrice(String productId){
 
     }
 }
