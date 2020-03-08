@@ -13,6 +13,7 @@ import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="t_product_info对象", description="商品信息")
-public class ProductInfo {
+public class ProductInfo  implements Serializable {
+
+	private static final long serialVersionUID = 1L;
     
 	/**id*/
 	@TableId(type = IdType.UUID)

@@ -61,7 +61,7 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 		IPage<ProductInfo> pageList = productInfoService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 * 添加
 	 *
@@ -73,7 +73,9 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ProductInfo productInfo) {
 		productInfoService.saveProductInfo(productInfo);
-		return Result.ok("添加成功！");
+		Result<Object> result = Result.ok("添加成功！");
+		result.setResult(productInfo.getId());
+		return result;
 	}
 	
 	/**
@@ -87,9 +89,11 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ProductInfo productInfo) {
 		productInfoService.updateProductInfo(productInfo);
-		return Result.ok("编辑成功!");
+		Result<Object> result = Result.ok("编辑成功！");
+		result.setResult(productInfo.getId());
+		return result;
 	}
-	
+
 	/**
 	 * 通过id删除
 	 *

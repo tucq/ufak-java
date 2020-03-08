@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ufak.product.mapper.ProductPriceMapper">
+    <select id="selectPage" parameterType="map" resultType="com.ufak.product.entity.ProductPrice">
+        SELECT
+        price.*,
+        CONCAT(specs1.specs_title,'/',specs2.specs_title) as specs_name
+        FROM
+        t_product_price price
+        LEFT JOIN t_product_specs specs1 ON price.specs1_id = specs1.id
+        LEFT JOIN t_product_specs specs2 ON price.specs2_id = specs2.id
+        <include refid="where" />
+        ORDER BY price.sort
+        limit #{start},#{size}
+    </select>
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_product_price price
+        LEFT JOIN t_product_specs specs1 ON price.specs1_id = specs1.id
+        LEFT JOIN t_product_specs specs2 ON price.specs2_id = specs2.id
+        <include refid="where" />
+    </select>
+    <sql id="where">
+        <where>
+            <if test="productId != null and productId != ''">
+                AND price.product_id = #{productId}
+            </if>
+        </where>
+    </sql>
+    
+    <update id="updateLevelOneSort">
+        update t_product_price set sort = #{sort} where product_id = #{productId} and specs1_id = #{specs1Id}
+    </update>
+
+    <update id="updateLevelTwoSort">
+        update t_product_price set sort = #{sort} where product_id = #{productId} and specs1_id = #{specs1Id} and specs2_id = #{specs2Id}
+    </update>
+</mapper>
