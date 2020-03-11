@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -75,6 +76,7 @@ public class ProductInfo  implements Serializable {
 	/**上下架标识：0-上架，1-下架*/
 	@Excel(name = "上下架标识：0-上架，1-下架", width = 15)
     @ApiModelProperty(value = "上下架标识：0-上架，1-下架")
+	@Dict(dicCode = "product_state")
 	private String state;
 	/**创建人员*/
 	@Excel(name = "创建人员", width = 15)

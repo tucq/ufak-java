@@ -9,9 +9,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -25,7 +27,8 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="t_homepage_ads对象", description="首页广告")
-public class HomepageAds {
+public class HomepageAds implements Serializable {
+	private static final long serialVersionUID = 1L;
     
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
@@ -36,8 +39,9 @@ public class HomepageAds {
     @ApiModelProperty(value = "图片")
 	private String imgUrl;
 	/**类型: 0-轮播图, 1-广告图*/
-	@Excel(name = "类型: 0-轮播图, 1-广告图", width = 15)
+	@Excel(name = "类型: 0-轮播图, 1-广告图", width = 15,dicCode="ads_type")
     @ApiModelProperty(value = "类型: 0-轮播图, 1-广告图")
+	@Dict(dicCode = "ads_type")
 	private String type;
 	/**头部广告*/
 	@Excel(name = "头部广告", width = 15)
@@ -46,6 +50,7 @@ public class HomepageAds {
 	/**排版: 0-单排, 1-双排*/
 	@Excel(name = "排版: 0-单排, 1-双排", width = 15)
     @ApiModelProperty(value = "排版: 0-单排, 1-双排")
+	@Dict(dicCode = "ads_layout")
 	private String layout;
 	/**背景色*/
 	@Excel(name = "背景色", width = 15)
@@ -58,6 +63,7 @@ public class HomepageAds {
 	/**状态: 0-启用, 1-禁用*/
 	@Excel(name = "状态: 0-启用, 1-禁用", width = 15)
     @ApiModelProperty(value = "状态: 0-启用, 1-禁用")
+	@Dict(dicCode = "stats")
 	private String state;
 	/**创建人员*/
 	@Excel(name = "创建人员", width = 15)

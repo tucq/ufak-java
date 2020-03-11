@@ -3,6 +3,7 @@ package com.ufak.product.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.common.FileUtil;
 import com.ufak.product.entity.HomepageAds;
 import com.ufak.product.service.IHomepageAdsService;
 import io.swagger.annotations.Api;
@@ -29,7 +30,7 @@ import java.util.Arrays;
 @Slf4j
 @Api(tags="首页广告")
 @RestController
-@RequestMapping("/com.ufak/homepageAds")
+@RequestMapping("/homepageAds")
 public class HomepageAdsController extends JeecgController<HomepageAds, IHomepageAdsService> {
 	@Autowired
 	private IHomepageAdsService homepageAdsService;
@@ -51,6 +52,7 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		QueryWrapper<HomepageAds> queryWrapper = QueryGenerator.initQueryWrapper(homepageAds, req.getParameterMap());
+		queryWrapper.orderByAsc("sort");
 		Page<HomepageAds> page = new Page<HomepageAds>(pageNo, pageSize);
 		IPage<HomepageAds> pageList = homepageAdsService.page(page, queryWrapper);
 		return Result.ok(pageList);
@@ -86,7 +88,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	
 	/**
 	 * 通过id删除
-	 *
 	 * @param id
 	 * @return
 	 */
@@ -94,7 +95,14 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	@ApiOperation(value="首页广告-通过id删除", notes="首页广告-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		HomepageAds ads = homepageAdsService.getById(id);
 		homepageAdsService.removeById(id);
+		if(ads.getImgUrl() != null){
+			FileUtil.delete(ads.getImgUrl());//删除文件
+		}
+		if(ads.getHeadImg() != null){
+			FileUtil.delete(ads.getHeadImg());//删除文件
+		}
 		return Result.ok("删除成功!");
 	}
 	
