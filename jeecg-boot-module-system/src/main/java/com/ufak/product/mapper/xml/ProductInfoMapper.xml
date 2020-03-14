@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ufak.product.mapper.ProductInfoMapper">
+    <select id="selectPage" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+        SELECT
+        info.*,
+        category.`code` as category_code
+        FROM
+        t_product_info info
+        LEFT JOIN t_product_category category ON info.product_type = category.id
+        <include refid="where" />
+        ORDER BY
+        info.create_time desc
+        limit #{start},#{size}
+    </select>
 
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_product_info info
+        LEFT JOIN t_product_category category ON info.product_type = category.id
+        <include refid="where" />
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="categoryCode != null and categoryCode != ''">
+                AND category.code like CONCAT(#{categoryCode},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND info.`name` like CONCAT('%',#{productName},'%')
+            </if>
+        </where>
+    </sql>
 </mapper>

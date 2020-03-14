@@ -4,13 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.common.FileUtil;
+import com.ufak.product.entity.ProductCategory;
 import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.entity.ProductSpecs;
+import com.ufak.product.service.IProductCategoryService;
 import com.ufak.product.service.IProductInfoService;
+import com.ufak.product.service.IProductPriceService;
 import com.ufak.product.service.IProductSpecsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -22,7 +26,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 商品信息
@@ -37,13 +43,16 @@ import java.util.List;
 public class ProductInfoController extends JeecgController<ProductInfo, IProductInfoService> {
 	@Autowired
 	private IProductInfoService productInfoService;
-	 @Autowired
-	 private IProductSpecsService productSpecsService;
+	@Autowired
+	private IProductSpecsService productSpecsService;
+	@Autowired
+	private IProductPriceService productPriceService;
+	@Autowired
+	private IProductCategoryService productCategoryService;
 	
 	/**
 	 * 分页列表查询
 	 *
-	 * @param productInfo
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
@@ -52,13 +61,31 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@AutoLog(value = "商品信息-分页列表查询")
 	@ApiOperation(value="商品信息-分页列表查询", notes="商品信息-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(ProductInfo productInfo,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ProductInfo> queryWrapper = QueryGenerator.initQueryWrapper(productInfo, req.getParameterMap());
-		Page<ProductInfo> page = new Page<ProductInfo>(pageNo, pageSize);
-		IPage<ProductInfo> pageList = productInfoService.page(page, queryWrapper);
+		String productName = req.getParameter("productName");
+		String categoryCode = req.getParameter("categoryCode");
+		Map paramMap = new HashMap<>();
+		if(StringUtils.isNotBlank(productName)){
+			paramMap.put("productName",productName);
+		}
+		if(StringUtils.isNotBlank(categoryCode)){
+			paramMap.put("categoryCode",categoryCode);
+		}
+
+		IPage<ProductInfo> pageList = productInfoService.selectPage(pageNo,pageSize,paramMap);
+
+		List<ProductInfo> records = pageList.getRecords();
+		for(ProductInfo product : records){
+			String code = product.getCategoryCode();
+			List<ProductCategory> pcList = productCategoryService.queryParentByCode(code);
+			String productTypeName = "";
+			for(ProductCategory pc : pcList){
+				productTypeName += pc.getName() + "/";
+			}
+			product.setProductTypeName(productTypeName.substring(0,productTypeName.length() - 1));
+		}
 		return Result.ok(pageList);
 	}
 
@@ -104,6 +131,11 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@ApiOperation(value="商品信息-通过id删除", notes="商品信息-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		this.deleteProduct(id);
+		return Result.ok("删除成功!");
+	}
+
+	private void deleteProduct(String id){
 		ProductInfo pi = productInfoService.getById(id);
 		if(pi != null){
 			String url = pi.getImage() + pi.getDetailImages();
@@ -111,19 +143,20 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 			for(int i = 0;i < urls.length; i++){
 				FileUtil.delete(urls[i]);// 删除图片
 			}
-
 			productInfoService.removeById(id);
 
-			QueryWrapper qw = new QueryWrapper();
-			qw.eq("product_id",id);
-			List<ProductSpecs> specsList = productSpecsService.list(qw);
+			QueryWrapper rwSpecs = new QueryWrapper();
+			rwSpecs.eq("product_id",id);
+			List<ProductSpecs> specsList = productSpecsService.list(rwSpecs);
 			for(ProductSpecs ps: specsList){
 				FileUtil.delete(ps.getSpecsImage());
-				productSpecsService.removeById(ps.getId());
 			}
-		}
+			productSpecsService.remove(rwSpecs);
 
-		return Result.ok("删除成功!");
+			QueryWrapper rwPrice = new QueryWrapper();
+			rwPrice.eq("product_id",id);
+			productPriceService.remove(rwPrice);
+		}
 	}
 	
 	/**
@@ -136,7 +169,10 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	@ApiOperation(value="商品信息-批量删除", notes="商品信息-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.productInfoService.removeByIds(Arrays.asList(ids.split(",")));
+		List<String> list = Arrays.asList(ids.split(","));
+		for(String id : list){
+			this.deleteProduct(id);
+		}
 		return Result.ok("批量删除成功！");
 	}
 	

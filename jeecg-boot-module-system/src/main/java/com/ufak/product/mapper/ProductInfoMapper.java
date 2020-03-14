@@ -1,10 +1,10 @@
 package com.ufak.product.mapper;
 
-import java.util.List;
-
-import com.ufak.product.entity.ProductInfo;
-import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ufak.product.entity.ProductInfo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 商品信息
@@ -14,4 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
 
+    List<ProductInfo> selectPage(Map paramMap);
+
+    long totalCount(Map paramMap);
 }

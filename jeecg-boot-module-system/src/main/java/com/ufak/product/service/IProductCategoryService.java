@@ -51,5 +51,11 @@ public interface IProductCategoryService extends IService<ProductCategory> {
 	 * @return
 	 */
 	public String queryIdByCode(String code);
-	
+
+	public ProductCategory getByCode(String code);
+
+
+	public List<ProductCategory> queryParentByCode(String code);
+
+
 }

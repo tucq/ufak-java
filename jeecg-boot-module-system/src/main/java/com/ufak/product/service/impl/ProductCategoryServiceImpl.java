@@ -2,6 +2,7 @@ package com.ufak.product.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ufak.product.entity.ProductCategory;
 import com.ufak.product.mapper.ProductCategoryMapper;
@@ -9,12 +10,12 @@ import com.ufak.product.service.IProductCategoryService;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysCategory;
-import org.jeecg.modules.system.mapper.SysCategoryMapper;
 import org.jeecg.modules.system.model.TreeSelectModel;
 import org.jeecg.modules.system.service.ISysCategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,9 @@ import java.util.Map;
  */
 @Service
 public class ProductCategoryServiceImpl extends ServiceImpl<ProductCategoryMapper, ProductCategory> implements IProductCategoryService {
+
+	@Autowired
+	private ProductCategoryMapper productCategoryMapper;
 
 	@Override
 	public void addProductCategory(ProductCategory productCategory) {
@@ -107,4 +111,27 @@ public class ProductCategoryServiceImpl extends ServiceImpl<ProductCategoryMappe
 		return baseMapper.queryIdByCode(code);
 	}
 
+	@Override
+	public ProductCategory getByCode(String code) {
+		QueryWrapper qw = new QueryWrapper();
+		qw.eq("code",code);
+		return this.getOne(qw);
+	}
+
+	@Override
+	public List<ProductCategory> queryParentByCode(String code) {
+		if(code == null || code.length() <3){
+			return new ArrayList<>();
+		}
+		List<ProductCategory> result = new ArrayList<>();
+		int len = code.length();
+		int count = len / 3;
+		int start = 0;
+		for(int i=0;i<count;i++){
+			String tmpCode = code.substring(0,start + 3);
+			result.add(this.getByCode(tmpCode));
+			start = start + 3;
+		}
+		return result;
+	}
 }

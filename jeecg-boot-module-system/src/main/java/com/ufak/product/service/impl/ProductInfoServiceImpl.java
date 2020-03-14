@@ -1,6 +1,8 @@
 package com.ufak.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ufak.common.Constants;
 import com.ufak.product.entity.ProductInfo;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 商品信息
@@ -28,11 +31,26 @@ import java.util.List;
 public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, ProductInfo> implements IProductInfoService {
 
     @Autowired
+    private ProductInfoMapper productInfoMapper;
+    @Autowired
     private IProductSpecsService productSpecsService;
     @Autowired
     private IProductPriceService productPriceService;
     @Autowired
     private ProductPriceMapper productPriceMapper;
+
+    @Override
+    public IPage<ProductInfo> selectPage(Integer pageNo, Integer pageSize, Map paramMap) {
+        int start = (pageNo - 1) * pageSize;
+        paramMap.put("start",start);
+        paramMap.put("size",pageSize);
+        List<ProductInfo> list = productInfoMapper.selectPage(paramMap);
+        long totalCount = productInfoMapper.totalCount(paramMap);
+        Page page = new Page(pageNo, pageSize);
+        page.setRecords(list);
+        page.setTotal(totalCount);
+        return page;
+    }
 
     @Override
     public void saveProductInfo(ProductInfo productInfo) {

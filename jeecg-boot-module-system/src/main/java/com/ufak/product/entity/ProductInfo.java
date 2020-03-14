@@ -107,6 +107,8 @@ public class ProductInfo  implements Serializable {
 
 	@TableField(exist = false)
 	private String productTypeName;
+	@TableField(exist = false)
+	private String categoryCode;
 
 
 }
