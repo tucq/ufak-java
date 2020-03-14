@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Maps;
 import com.ufak.common.FileUtil;
 import com.ufak.product.entity.ProductCategory;
 import com.ufak.product.service.IProductCategoryService;
@@ -464,6 +465,36 @@ public class ProductCategoryController {
         return result;
     }
 
+    /**
+     * 获取某类数据的树
+     */
+    @RequestMapping(value = "/loadTypeTree", method = RequestMethod.GET)
+    public Result<List<TreeSelectModel>> loadTypeTree(
+            @RequestParam(name="async",required = false,defaultValue = "true") Boolean async,
+            @RequestParam(name="queryChild",required = false,defaultValue = "true") Boolean queryChild,
+            @RequestParam(name="pid",required = false) String pid) {
+        Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+        try {
+            if(oConvertUtils.isEmpty(pid)){
+                pid = "0";
+            }
+            Map<String, String> query = Maps.newHashMap();
+            if (queryChild == false){
+                query.put("has_child","1");
+            }
+            List<TreeSelectModel> ls = productCategoryService.queryListByPid(pid,query);
+            if(!async) {
+                loadAllCategoryChildren(ls);
+            }
+            result.setSuccess(true);
+            result.setResult(ls);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setMessage(e.getMessage());
+            result.setSuccess(false);
+        }
+        return result;
+    }
 
 
 

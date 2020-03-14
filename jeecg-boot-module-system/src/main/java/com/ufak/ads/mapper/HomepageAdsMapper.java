@@ -1,7 +1,7 @@
-package com.ufak.product.mapper;
+package com.ufak.ads.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.ufak.product.entity.HomepageAds;
+import com.ufak.ads.entity.HomepageAds;
 
 /**
  * @Description: 首页广告

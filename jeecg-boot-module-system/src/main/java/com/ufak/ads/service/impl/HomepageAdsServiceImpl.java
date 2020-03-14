@@ -1,10 +1,10 @@
-package com.ufak.product.service.impl;
+package com.ufak.ads.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ufak.product.entity.HomepageAds;
-import com.ufak.product.mapper.HomepageAdsMapper;
-import com.ufak.product.service.IHomepageAdsService;
+import com.ufak.ads.entity.HomepageAds;
+import com.ufak.ads.mapper.HomepageAdsMapper;
+import com.ufak.ads.service.IHomepageAdsService;
 import org.springframework.stereotype.Service;
 
 /**

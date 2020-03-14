@@ -1,7 +1,7 @@
-package com.ufak.product.service;
+package com.ufak.ads.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ufak.product.entity.HomepageAds;
+import com.ufak.ads.entity.HomepageAds;
 
 /**
  * @Description: 首页广告

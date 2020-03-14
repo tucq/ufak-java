@@ -1,4 +1,4 @@
-package com.ufak.product.entity;
+package com.ufak.ads.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -34,6 +34,10 @@ public class HomepageAds implements Serializable {
 	@TableId(type = IdType.ID_WORKER_STR)
     @ApiModelProperty(value = "主键")
 	private String id;
+	/**广告名称*/
+	@Excel(name = "广告名称", width = 15)
+	@ApiModelProperty(value = "广告名称")
+	private String adsName;
 	/**图片*/
 	@Excel(name = "图片", width = 15)
     @ApiModelProperty(value = "图片")

@@ -1,11 +1,11 @@
-package com.ufak.product.controller;
+package com.ufak.ads.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.common.FileUtil;
-import com.ufak.product.entity.HomepageAds;
-import com.ufak.product.service.IHomepageAdsService;
+import com.ufak.ads.entity.HomepageAds;
+import com.ufak.ads.service.IHomepageAdsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
