@@ -64,12 +64,16 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 								   HttpServletRequest req) {
 		String productName = req.getParameter("productName");
 		String categoryCode = req.getParameter("categoryCode");
+		String state = req.getParameter("state");
 		Map paramMap = new HashMap<>();
 		if(StringUtils.isNotBlank(productName)){
 			paramMap.put("productName",productName);
 		}
 		if(StringUtils.isNotBlank(categoryCode)){
 			paramMap.put("categoryCode",categoryCode);
+		}
+		if(StringUtils.isNotBlank(state)){
+			paramMap.put("state",state);
 		}
 
 		IPage<ProductInfo> pageList = productInfoService.selectPage(pageNo,pageSize,paramMap);

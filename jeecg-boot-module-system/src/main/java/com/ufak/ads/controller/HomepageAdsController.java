@@ -1,11 +1,15 @@
 package com.ufak.ads.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ufak.common.FileUtil;
+import com.ufak.ads.entity.AdsProduct;
 import com.ufak.ads.entity.HomepageAds;
+import com.ufak.ads.service.IAdsProductService;
 import com.ufak.ads.service.IHomepageAdsService;
+import com.ufak.common.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +24,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
- /**
+/**
  * @Description: 首页广告
  * @Author: jeecg-boot
  * @Date:   2020-03-09
@@ -34,6 +39,8 @@ import java.util.Arrays;
 public class HomepageAdsController extends JeecgController<HomepageAds, IHomepageAdsService> {
 	@Autowired
 	private IHomepageAdsService homepageAdsService;
+	@Autowired
+	private IAdsProductService adsProductService;
 	
 	/**
 	 * 分页列表查询
@@ -71,6 +78,30 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 		homepageAdsService.save(homepageAds);
 		return Result.ok("添加成功！");
 	}
+
+	 /**
+	  * 添加商品
+	  * @return
+	  */
+	 @AutoLog(value = "添加商品")
+	 @ApiOperation(value="添加商品", notes="添加商品")
+	 @PostMapping(value = "/addProduct")
+	 public Result<?> addProduct(@RequestBody JSONObject jsonObject) {
+		 JSONArray array = jsonObject.getJSONArray("productIds");
+		 String adsId = jsonObject.getString("adsId");
+		 List<String> productIds = array.toJavaList(String.class);
+		 for (int i = 0; i < productIds.size(); i++) {
+			 AdsProduct adsProduct = new AdsProduct();
+			 adsProduct.setAdsId(adsId);
+			 adsProduct.setProductId(productIds.get(i));
+			 try {
+				 adsProductService.save(adsProduct);
+			 }catch (Exception e){
+			 	e.printStackTrace();
+			 }
+		 }
+		 return Result.ok("添加成功！");
+	 }
 	
 	/**
 	 * 编辑
@@ -103,6 +134,11 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 		if(ads.getHeadImg() != null){
 			FileUtil.delete(ads.getHeadImg());//删除文件
 		}
+
+		QueryWrapper rw = new QueryWrapper();
+		rw.eq("ads_id",id);
+		adsProductService.remove(rw);
+
 		return Result.ok("删除成功!");
 	}
 	

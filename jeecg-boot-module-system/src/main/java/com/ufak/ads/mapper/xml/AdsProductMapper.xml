@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ufak.ads.mapper.AdsProductMapper">
+    <select id="selectPage" parameterType="map" resultType="com.ufak.ads.entity.AdsProduct">
+        SELECT
+        ads.*,
+        info.image,
+        info.`name` as product_name,
+        info.sales_volume
+        FROM
+        t_ads_product ads
+        LEFT JOIN t_product_info info ON info.id = ads.product_id
+        <include refid="where" />
+        ORDER BY
+        ads.create_time desc
+        limit #{start},#{size}
+    </select>
+
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_ads_product ads
+        LEFT JOIN t_product_info info ON info.id = ads.product_id
+        <include refid="where" />
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="adsId != null and adsId != ''">
+                AND ads.ads_id = #{adsId}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

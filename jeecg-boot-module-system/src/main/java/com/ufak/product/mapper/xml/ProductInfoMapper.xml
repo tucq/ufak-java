@@ -28,6 +28,9 @@
             <if test="productName != null and productName != ''">
                 AND info.`name` like CONCAT('%',#{productName},'%')
             </if>
+            <if test="state != null and state != ''">
+                AND info.`state` = #{state}
+            </if>
         </where>
     </sql>
 </mapper>
