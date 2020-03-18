@@ -3,6 +3,8 @@ package com.ufak.ads.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ufak.ads.entity.HomepageAds;
 
+import java.util.List;
+
 /**
  * @Description: 首页广告
  * @Author: jeecg-boot
@@ -11,4 +13,5 @@ import com.ufak.ads.entity.HomepageAds;
  */
 public interface IHomepageAdsService extends IService<HomepageAds> {
 
+    List<HomepageAds> queryAdsList();
 }
