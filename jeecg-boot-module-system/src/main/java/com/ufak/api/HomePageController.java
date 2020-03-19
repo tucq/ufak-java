@@ -12,8 +12,10 @@ import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +32,9 @@ public class HomePageController {
     private IHomepageAdsService homepageAdsService;
 
     @GetMapping(value = "/list")
-    public Result<Map> queryPageList() {
+    public Result<Map> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                     HttpServletRequest req) {
         Result<Map> result = new Result<>();
         QueryWrapper qwAds = new QueryWrapper();
         qwAds.eq("state", Constants.YES);
@@ -51,10 +55,7 @@ public class HomePageController {
             }
         }
 
-        QueryWrapper productQw = new QueryWrapper();
-        productQw.eq("state",Constants.YES);
-        productQw.orderByDesc("sales_volume");
-        List<ProductInfo> productList = productInfoService.list();
+        List<ProductInfo> productList = productInfoService.queryHomeProduct(pageNo,pageSize);
 
         map.put("headList",headList);
         map.put("categoryList",categoryList);
@@ -63,5 +64,14 @@ public class HomePageController {
         result.setResult(map);
         result.setSuccess(true);
         return result;
+    }
+
+    @GetMapping(value = "/ads/product")
+    public List<ProductInfo> queryAdsProduct(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                     HttpServletRequest req) {
+        String adsId = req.getParameter("adsId");
+        List<ProductInfo> productList = productInfoService.queryAdsProduct(adsId,pageNo,pageSize);
+        return  productList;
     }
 }

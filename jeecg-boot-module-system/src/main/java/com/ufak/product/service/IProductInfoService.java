@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ufak.product.entity.ProductInfo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,5 +29,17 @@ public interface IProductInfoService extends IService<ProductInfo> {
      * @return
      */
     void updateProductInfo(ProductInfo productInfo);
+
+    /**
+     * 查询首页商品
+     */
+    List<ProductInfo> queryHomeProduct(Integer pageNo, Integer pageSize);
+
+    /**
+     * 查询首页广告关联商品
+     */
+    List<ProductInfo> queryAdsProduct(String adsId,Integer pageNo, Integer pageSize);
+
+
 
 }

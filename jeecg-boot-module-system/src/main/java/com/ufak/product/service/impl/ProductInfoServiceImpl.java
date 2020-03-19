@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -204,4 +205,26 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         price.setStock(0);
         return  price;
     }
+
+    @Override
+    public List<ProductInfo> queryHomeProduct(Integer pageNo, Integer pageSize) {
+        int start = (pageNo - 1) * pageSize;
+        Map paramMap = new HashMap<>();
+        paramMap.put("start",start);
+        paramMap.put("size",pageSize);
+        List<ProductInfo> list = productInfoMapper.queryHomeProduct(paramMap);
+        return list;
+    }
+
+    @Override
+    public List<ProductInfo> queryAdsProduct(String adsId, Integer pageNo, Integer pageSize) {
+        int start = (pageNo - 1) * pageSize;
+        Map paramMap = new HashMap<>();
+        paramMap.put("adsId",adsId);
+        paramMap.put("start",start);
+        paramMap.put("size",pageSize);
+        List<ProductInfo> list = productInfoMapper.queryAdsProduct(paramMap);
+        return list;
+    }
+
 }

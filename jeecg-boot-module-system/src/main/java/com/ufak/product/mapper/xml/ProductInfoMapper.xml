@@ -8,7 +8,7 @@
         FROM
         t_product_info info
         LEFT JOIN t_product_category category ON info.product_type = category.id
-        <include refid="where" />
+        <include refid="where"/>
         ORDER BY
         info.create_time desc
         limit #{start},#{size}
@@ -17,7 +17,7 @@
     <select id="totalCount" parameterType="map" resultType="long">
         SELECT count(1) FROM t_product_info info
         LEFT JOIN t_product_category category ON info.product_type = category.id
-        <include refid="where" />
+        <include refid="where"/>
     </select>
 
     <sql id="where">
@@ -33,4 +33,46 @@
             </if>
         </where>
     </sql>
+
+    <select id="queryHomeProduct" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+        SELECT
+            info.id,
+            substring_index(info.image, ',', 1) as view_image,
+            info.`name`,
+            info.description,
+            info.sales_volume,
+            price.price,
+            price.virtual_price
+        FROM
+            t_product_info info
+        LEFT JOIN t_product_price price ON info.id = price.product_id
+        where price.default_flag = '0' and info.state = '0'
+        ORDER BY info.sales_volume desc
+        limit #{start},#{size}
+    </select>
+
+    <select id="queryAdsProduct" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+        SELECT
+            info.id,
+            substring_index(info.image, ',', 1) as view_image,
+            info.`name`,
+            info.description,
+            info.sales_volume,
+            price.price,
+            price.virtual_price
+        FROM
+            t_ads_product ads
+        LEFT JOIN t_product_info info on ads.product_id = info.id
+        LEFT JOIN t_product_price price ON ads.product_id = price.product_id
+        where
+          price.default_flag = '0'
+          and info.state = '0'
+          and ads.ads_id = #{adsId}
+        ORDER BY info.sales_volume desc
+        limit #{start},#{size}
+    </select>
+
+
+
+
 </mapper>

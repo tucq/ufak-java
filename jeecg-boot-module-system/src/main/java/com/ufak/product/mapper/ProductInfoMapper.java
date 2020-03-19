@@ -17,4 +17,8 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
     List<ProductInfo> selectPage(Map paramMap);
 
     long totalCount(Map paramMap);
+
+    List<ProductInfo> queryHomeProduct(Map paramMap);
+
+    List<ProductInfo> queryAdsProduct(Map paramMap);
 }

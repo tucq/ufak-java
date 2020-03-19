@@ -15,6 +15,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -109,6 +110,16 @@ public class ProductInfo  implements Serializable {
 	private String productTypeName;
 	@TableField(exist = false)
 	private String categoryCode;
+
+	/**手机端展示图片*/
+	@TableField(exist = false)
+	private String viewImage;
+	/**手机端展示商品价格*/
+	@TableField(exist = false)
+	private BigDecimal price;
+	/**手机端展示商品划线价*/
+	@TableField(exist = false)
+	private BigDecimal virtualPrice;
 
 
 }
