@@ -4,7 +4,7 @@
     <select id="selectPage" parameterType="map" resultType="com.ufak.product.entity.ProductPrice">
         SELECT
         price.*,
-        CONCAT(specs1.specs_title,'/',specs2.specs_title) as specs_name
+        IF(ISNULL(specs2.specs_title),specs1.specs_title,CONCAT(specs1.specs_title,' / ',specs2.specs_title)) as specs_name
         FROM
         t_product_price price
         LEFT JOIN t_product_specs specs1 ON price.specs1_id = specs1.id

@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -40,6 +41,11 @@ public class AdsProduct {
 	@Excel(name = "商品id", width = 15)
     @ApiModelProperty(value = "商品id")
 	private String productId;
+	/**排版: 0-单排, 1-双排,2-三排*/
+	@Excel(name = "排版", width = 15)
+	@ApiModelProperty(value = "排版")
+	@Dict(dicCode = "ads_layout")
+	private String layout;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

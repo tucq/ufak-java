@@ -1,7 +1,10 @@
 package com.ufak.product.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.ufak.product.entity.ProductInfo;
+import com.ufak.common.Constants;
 import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.service.IProductPriceService;
 import io.swagger.annotations.Api;
@@ -89,15 +92,29 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 
 	/**
 	 * 编辑价格
-	 * @param productPriceList
 	 * @return
 	 */
 	@AutoLog(value = "商品信息-编辑")
 	@ApiOperation(value="商品信息-编辑", notes="商品信息-编辑")
 	@PutMapping(value = "/update/price")
-	public Result<?> updatePrice(@RequestBody List<ProductPrice> productPriceList) {
+	public Result<?> updatePrice(@RequestBody JSONObject jsonObject) {
+		JSONArray array = jsonObject.getJSONArray("productPriceList");
+		List<ProductPrice> productPriceList = array.toJavaList(ProductPrice.class);
 		for(ProductPrice price : productPriceList){
 			productPriceService.updateById(price);
+		}
+
+		JSONObject json = jsonObject.getJSONObject("defaultFlag");
+		String productId = json.getString("productId");
+		String id = json.getString("id");
+		if(StringUtils.isNotEmpty(id)){
+			UpdateWrapper uw = new UpdateWrapper();
+			uw.set("default_flag", Constants.NO);
+			uw.eq("product_id",productId);
+			productPriceService.update(uw);
+			uw.set("default_flag", Constants.YES);
+			uw.eq("id",id);
+			productPriceService.update(uw);
 		}
 		return Result.ok("价格库存设置成功!");
 	}

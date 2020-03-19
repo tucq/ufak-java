@@ -51,11 +51,6 @@ public class HomepageAds implements Serializable {
 	@Excel(name = "头部广告", width = 15)
     @ApiModelProperty(value = "头部广告")
 	private String headImg;
-	/**排版: 0-单排, 1-双排*/
-	@Excel(name = "排版: 0-单排, 1-双排", width = 15)
-    @ApiModelProperty(value = "排版: 0-单排, 1-双排")
-	@Dict(dicCode = "ads_layout")
-	private String layout;
 	/**背景色*/
 	@Excel(name = "背景色", width = 15)
     @ApiModelProperty(value = "背景色")
