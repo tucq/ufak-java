@@ -34,7 +34,8 @@
         </where>
     </sql>
 
-    <select id="queryHomeProduct" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+    <!-- 首页随便看看商品 start-->
+    <select id="queryHomeProductPage" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
         SELECT
             info.id,
             substring_index(info.image, ',', 1) as view_image,
@@ -50,8 +51,16 @@
         ORDER BY info.sales_volume desc
         limit #{start},#{size}
     </select>
+    <select id="totalCountHomeProduct" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_product_info info
+        LEFT JOIN t_product_price price ON info.id = price.product_id
+        where price.default_flag = '0' and info.state = '0'
+    </select>
+    <!-- 首页随便看看商品 end-->
 
-    <select id="queryAdsProduct" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+
+    <!-- 首页轮播图,分类, 插拔广告关联商品查询 start-->
+    <select id="queryAdsProductPage" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
         SELECT
             info.id,
             substring_index(info.image, ',', 1) as view_image,
@@ -64,15 +73,25 @@
             t_ads_product ads
         LEFT JOIN t_product_info info on ads.product_id = info.id
         LEFT JOIN t_product_price price ON ads.product_id = price.product_id
-        where
-          price.default_flag = '0'
-          and info.state = '0'
-          and ads.ads_id = #{adsId}
+        <include refid="whereAdsProduct"/>
         ORDER BY info.sales_volume desc
         limit #{start},#{size}
     </select>
-
-
+    <select id="totalCountAdsProduct" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_ads_product ads
+        LEFT JOIN t_product_info info on ads.product_id = info.id
+        LEFT JOIN t_product_price price ON ads.product_id = price.product_id
+        <include refid="whereAdsProduct"/>
+    </select>
+    <sql id="whereAdsProduct">
+        <where>
+            price.default_flag = '0' and info.state = '0'
+            <if test="adsId != null and adsId != ''">
+                AND ads.ads_id = #{adsId}
+            </if>
+        </where>
+    </sql>
+    <!-- 首页轮播图,分类, 插拔广告关联商品查询 end-->
 
 
 </mapper>

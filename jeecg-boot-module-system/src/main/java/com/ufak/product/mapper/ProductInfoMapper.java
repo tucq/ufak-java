@@ -18,7 +18,19 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
 
     long totalCount(Map paramMap);
 
-    List<ProductInfo> queryHomeProduct(Map paramMap);
+    /**
+     * 首页随便看看商品
+     * @param paramMap
+     * @return
+     */
+    List<ProductInfo> queryHomeProductPage(Map paramMap);
+    long totalCountHomeProduct(Map paramMap);
 
-    List<ProductInfo> queryAdsProduct(Map paramMap);
+    /**
+     * 首页轮播图,分类, 插拔广告关联商品查询
+     * @param paramMap
+     * @return
+     */
+    List<ProductInfo> queryAdsProductPage(Map paramMap);
+    long totalCountAdsProduct(Map paramMap);
 }

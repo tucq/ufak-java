@@ -16,6 +16,7 @@ import com.ufak.product.service.IProductSpecsService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
     }
 
     @Override
+    @Transactional
     public void saveProductInfo(ProductInfo productInfo) {
         this.save(productInfo);
         insertProductSpecs(productInfo);
@@ -61,6 +63,7 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
     }
 
     @Override
+    @Transactional
     public void updateProductInfo(ProductInfo productInfo) {
         this.updateById(productInfo);
         QueryWrapper qw = new QueryWrapper();
@@ -207,24 +210,30 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
     }
 
     @Override
-    public List<ProductInfo> queryHomeProduct(Integer pageNo, Integer pageSize) {
+    public IPage<ProductInfo> queryHomeProductPage(Integer pageNo, Integer pageSize) {
         int start = (pageNo - 1) * pageSize;
         Map paramMap = new HashMap<>();
         paramMap.put("start",start);
         paramMap.put("size",pageSize);
-        List<ProductInfo> list = productInfoMapper.queryHomeProduct(paramMap);
-        return list;
+        List<ProductInfo> list = productInfoMapper.queryHomeProductPage(paramMap);
+        long totalCount = productInfoMapper.totalCountHomeProduct(paramMap);
+        Page page = new Page(pageNo, pageSize);
+        page.setRecords(list);
+        page.setTotal(totalCount);
+        return page;
     }
 
     @Override
-    public List<ProductInfo> queryAdsProduct(String adsId, Integer pageNo, Integer pageSize) {
+    public IPage<ProductInfo> queryAdsProductPage(Integer pageNo, Integer pageSize, Map paramMap) {
         int start = (pageNo - 1) * pageSize;
-        Map paramMap = new HashMap<>();
-        paramMap.put("adsId",adsId);
         paramMap.put("start",start);
         paramMap.put("size",pageSize);
-        List<ProductInfo> list = productInfoMapper.queryAdsProduct(paramMap);
-        return list;
+        List<ProductInfo> list = productInfoMapper.queryAdsProductPage(paramMap);
+        long totalCount = productInfoMapper.totalCountAdsProduct(paramMap);
+        Page page = new Page(pageNo, pageSize);
+        page.setRecords(list);
+        page.setTotal(totalCount);
+        return page;
     }
 
 }
