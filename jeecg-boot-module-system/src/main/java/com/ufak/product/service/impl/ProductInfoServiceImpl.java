@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -210,13 +209,12 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
     }
 
     @Override
-    public IPage<ProductInfo> queryHomeProductPage(Integer pageNo, Integer pageSize) {
+    public IPage<ProductInfo> queryPhoneProductPage(Integer pageNo, Integer pageSize,Map paramMap) {
         int start = (pageNo - 1) * pageSize;
-        Map paramMap = new HashMap<>();
         paramMap.put("start",start);
         paramMap.put("size",pageSize);
-        List<ProductInfo> list = productInfoMapper.queryHomeProductPage(paramMap);
-        long totalCount = productInfoMapper.totalCountHomeProduct(paramMap);
+        List<ProductInfo> list = productInfoMapper.queryPhoneProductPage(paramMap);
+        long totalCount = productInfoMapper.totalCountPhoneProduct(paramMap);
         Page page = new Page(pageNo, pageSize);
         page.setRecords(list);
         page.setTotal(totalCount);
@@ -236,4 +234,36 @@ public class ProductInfoServiceImpl extends ServiceImpl<ProductInfoMapper, Produ
         return page;
     }
 
+
+    @Override
+    public ProductInfo getProductDetail(String productId) {
+        ProductInfo productInfo = productInfoMapper.getProductDetail(productId);
+        QueryWrapper specs0 = new QueryWrapper();
+        specs0.eq("product_id",productId);
+        specs0.eq("pid","0");
+        List<ProductSpecs> specsTitleList = productSpecsService.list(specs0);
+
+        QueryWrapper specs1 = new QueryWrapper();
+        specs1.eq("product_id",productId);
+        specs1.eq("level","0");
+        specs1.eq("stats","0");
+        specs1.ne("pid","0");
+        List<ProductSpecs> specsOneList = productSpecsService.list(specs1);
+
+        QueryWrapper specs2 = new QueryWrapper();
+        specs2.eq("product_id",productId);
+        specs2.eq("level","1");
+        specs2.eq("stats","0");
+        specs2.ne("pid","0");
+        List<ProductSpecs> specsTwoList = productSpecsService.list(specs2);
+
+        productInfo.setSpecsTitleList(specsTitleList);
+        productInfo.setSpecsOneList(specsOneList);
+        productInfo.setSpecsTwoList(specsTwoList);
+
+        List<ProductPrice> priceList = productPriceService.queryProductPrice(productId);
+        productInfo.setPriceList(priceList);
+
+        return productInfo;
+    }
 }

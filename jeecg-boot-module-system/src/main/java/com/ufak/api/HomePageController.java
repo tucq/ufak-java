@@ -57,7 +57,9 @@ public class HomePageController {
             }
         }
 
-        IPage<ProductInfo> pageList = productInfoService.queryHomeProductPage(pageNo,pageSize);
+        Map paramMap = new HashMap<>();
+        paramMap.put("salesVolume","desc");//按销量排序
+        IPage<ProductInfo> pageList = productInfoService.queryPhoneProductPage(pageNo,pageSize,paramMap);
 
         pageList.getRecords();
         map.put("headList",headList);
@@ -81,7 +83,9 @@ public class HomePageController {
     public Result<?> queryHomeProductPage(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                      @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                      HttpServletRequest req) {
-        IPage<ProductInfo> pageList = productInfoService.queryHomeProductPage(pageNo,pageSize);
+        Map paramMap = new HashMap<>();
+        paramMap.put("salesVolume","desc");//按销量排序
+        IPage<ProductInfo> pageList = productInfoService.queryPhoneProductPage(pageNo,pageSize,paramMap);
         return Result.ok(pageList);
     }
 

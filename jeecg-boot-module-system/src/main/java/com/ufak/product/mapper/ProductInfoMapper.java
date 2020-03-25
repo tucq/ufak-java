@@ -2,6 +2,7 @@ package com.ufak.product.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ufak.product.entity.ProductInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,12 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
     long totalCount(Map paramMap);
 
     /**
-     * 首页随便看看商品
+     * 手机端商品列表
      * @param paramMap
      * @return
      */
-    List<ProductInfo> queryHomeProductPage(Map paramMap);
-    long totalCountHomeProduct(Map paramMap);
+    List<ProductInfo> queryPhoneProductPage(Map paramMap);
+    long totalCountPhoneProduct(Map paramMap);
 
     /**
      * 首页轮播图,分类, 插拔广告关联商品查询
@@ -33,4 +34,13 @@ public interface ProductInfoMapper extends BaseMapper<ProductInfo> {
      */
     List<ProductInfo> queryAdsProductPage(Map paramMap);
     long totalCountAdsProduct(Map paramMap);
+
+    /**
+     * 手机端获取商品详细信息
+     * @param productId
+     * @return
+     */
+    ProductInfo getProductDetail(@Param("productId")String productId);
+
+
 }

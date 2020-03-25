@@ -22,4 +22,6 @@ public interface ProductPriceMapper extends BaseMapper<ProductPrice> {
     void updateLevelOneSort(@Param("productId")String productId,@Param("specs1Id")String specs1Id,@Param("sort") int sort);
 
     void updateLevelTwoSort(@Param("productId")String productId,@Param("specs1Id")String specs1Id,@Param("specs2Id")String specs2Id,@Param("sort") int sort);
+
+    List<ProductPrice> queryProductPrice(@Param("productId")String productId);
 }

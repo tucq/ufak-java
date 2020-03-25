@@ -34,8 +34,8 @@
         </where>
     </sql>
 
-    <!-- 首页随便看看商品 start-->
-    <select id="queryHomeProductPage" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
+    <!-- 手机端商品列表 start-->
+    <select id="queryPhoneProductPage" parameterType="map" resultType="com.ufak.product.entity.ProductInfo">
         SELECT
             info.id,
             substring_index(info.image, ',', 1) as view_image,
@@ -47,16 +47,32 @@
         FROM
             t_product_info info
         LEFT JOIN t_product_price price ON info.id = price.product_id
-        where price.default_flag = '0' and info.state = '0'
-        ORDER BY info.sales_volume desc
+        <include refid="wherePhoneProduct"/>
+        <include refid="phoneProductOrderBy"/>
         limit #{start},#{size}
     </select>
-    <select id="totalCountHomeProduct" parameterType="map" resultType="long">
+    <select id="totalCountPhoneProduct" parameterType="map" resultType="long">
         SELECT count(1) FROM t_product_info info
         LEFT JOIN t_product_price price ON info.id = price.product_id
-        where price.default_flag = '0' and info.state = '0'
+        <include refid="wherePhoneProduct"/>
     </select>
-    <!-- 首页随便看看商品 end-->
+    <sql id="wherePhoneProduct">
+        <where>
+            price.default_flag = '0' and info.state = '0'
+            <if test="categoryId != null and categoryId != ''">
+                AND info.product_type = #{categoryId}
+            </if>
+        </where>
+    </sql>
+    <sql id="phoneProductOrderBy">
+        <if test="salesVolume != null and salesVolume != ''">
+            ORDER BY info.sales_volume ${salesVolume}
+        </if>
+        <if test="price != null and price != ''">
+            ORDER BY price.price ${price}
+        </if>
+    </sql>
+    <!-- 手机端商品列表 end-->
 
 
     <!-- 首页轮播图,分类, 插拔广告关联商品查询 start-->
@@ -92,6 +108,26 @@
         </where>
     </sql>
     <!-- 首页轮播图,分类, 插拔广告关联商品查询 end-->
+
+
+    <!-- 手机端获取商品详细信息 -->
+    <select id="getProductDetail" resultType="com.ufak.product.entity.ProductInfo">
+        SELECT
+            info.id,
+            info.image,
+            info.detail_images,
+            info.name,
+            info.description,
+            info.service,
+            info.sales_volume,
+            price.price,
+            price.virtual_price,
+            price.stock
+            FROM
+            t_product_info info
+            LEFT JOIN t_product_price price ON info.id = price.product_id and price.default_flag = '0'
+            where  price.product_id = #{productId}
+    </select>
 
 
 </mapper>

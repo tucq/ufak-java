@@ -2,6 +2,7 @@ package com.ufak.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ufak.common.Constants;
 import com.ufak.product.entity.ProductCategory;
 import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.service.IProductCategoryService;
@@ -52,11 +53,23 @@ public class CategoryController {
                                           @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                           HttpServletRequest req) {
         String categoryId = req.getParameter("categoryId");
+        String orderByValue = req.getParameter("orderByValue");
         Map paramMap = new HashMap<>();
         if(StringUtils.isNotBlank(categoryId)){
             paramMap.put("categoryId",categoryId);
         }
-        IPage<ProductInfo> pageList = productInfoService.queryCategoryProductPage(pageNo,pageSize,paramMap);
+        if(StringUtils.isNotBlank(orderByValue)){
+            if(Constants.ORDERY_BY_XL.equals(orderByValue)){
+                paramMap.put("salesVolume","desc");
+            }else if(Constants.ORDERY_BY_DG.equals(orderByValue)){
+                paramMap.put("price","asc");
+            }else if(Constants.ORDERY_BY_GD.equals(orderByValue)){
+                paramMap.put("price","desc");
+            }
+        }
+
+        IPage<ProductInfo> pageList = productInfoService.queryPhoneProductPage(pageNo,pageSize,paramMap);
+
         return Result.ok(pageList);
     }
 }

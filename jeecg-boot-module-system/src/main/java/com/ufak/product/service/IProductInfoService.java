@@ -30,20 +30,22 @@ public interface IProductInfoService extends IService<ProductInfo> {
     void updateProductInfo(ProductInfo productInfo);
 
     /**
-     * 查询首页商品
+     * 手机端商品列表
      */
-    IPage<ProductInfo> queryHomeProductPage(Integer pageNo, Integer pageSize);
+    IPage<ProductInfo> queryPhoneProductPage(Integer pageNo, Integer pageSize,Map paramMap);
 
     /**
      * 查询首页广告关联商品
      */
     IPage<ProductInfo> queryAdsProductPage(Integer pageNo, Integer pageSize,Map paramMap);
 
-
     /**
-     * 分类商品查询
+     * 手机端获取商品详细信息
+     * @param productId
+     * @return
      */
-    IPage<ProductInfo> queryCategoryProductPage(Integer pageNo, Integer pageSize,Map paramMap);
+    ProductInfo getProductDetail(String productId);
+
 
 
 

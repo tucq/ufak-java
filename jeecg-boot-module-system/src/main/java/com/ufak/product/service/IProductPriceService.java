@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ufak.product.entity.ProductPrice;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,4 +23,12 @@ public interface IProductPriceService extends IService<ProductPrice> {
      * @return
      */
     IPage<ProductPrice> selectPage(Integer pageNo, Integer pageSize, Map paramMap);
+
+
+    /**
+     * 手机端查询商品价格库存
+     * @param productId
+     * @return
+     */
+    List<ProductPrice> queryProductPrice(String productId);
 }

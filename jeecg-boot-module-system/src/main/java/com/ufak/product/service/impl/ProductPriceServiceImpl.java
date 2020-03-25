@@ -35,4 +35,9 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper, Pro
         page.setTotal(totalCount);
         return page;
     }
+
+    @Override
+    public List<ProductPrice> queryProductPrice(String productId) {
+        return productPriceMapper.queryProductPrice(productId);
+    }
 }

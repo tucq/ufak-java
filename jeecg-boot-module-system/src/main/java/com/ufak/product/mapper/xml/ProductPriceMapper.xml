@@ -34,4 +34,21 @@
     <update id="updateLevelTwoSort">
         update t_product_price set sort = #{sort} where product_id = #{productId} and specs1_id = #{specs1Id} and specs2_id = #{specs2Id}
     </update>
+
+    <select id="queryProductPrice" resultType="com.ufak.product.entity.ProductPrice">
+        SELECT
+        price.specs1_id,
+        price.specs2_id,
+        price.price,
+        price.virtual_price,
+        price.stock,
+        price.default_flag
+        FROM
+        t_product_price price
+        LEFT JOIN t_product_specs specs1 ON price.specs1_id = specs1.id
+        LEFT JOIN t_product_specs specs2 ON price.specs2_id = specs2.id
+        where price.product_id=#{productId} ORDER BY price.sort
+    </select>
+
+
 </mapper>

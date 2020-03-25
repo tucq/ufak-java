@@ -54,10 +54,6 @@ public class ProductInfo  implements Serializable {
 	@Excel(name = "商品分类", width = 15)
     @ApiModelProperty(value = "商品分类")
 	private String productType;
-	/**规格*/
-	@Excel(name = "规格", width = 15)
-    @ApiModelProperty(value = "规格")
-	private String specs;
 	/**销量*/
 	@Excel(name = "销量", width = 15)
     @ApiModelProperty(value = "销量")
@@ -120,6 +116,23 @@ public class ProductInfo  implements Serializable {
 	/**手机端展示商品划线价*/
 	@TableField(exist = false)
 	private BigDecimal virtualPrice;
+	/**手机端展示商品默认规格库存*/
+	@TableField(exist = false)
+	private Integer stock;
+	/**手机端展示规格描述*/
+	@TableField(exist = false)
+	private List<ProductSpecs> specsTitleList;
+	/**手机端展示规格一*/
+	@TableField(exist = false)
+	private List<ProductSpecs> specsOneList;
+	/**手机端展示规格二*/
+	@TableField(exist = false)
+	private List<ProductSpecs> specsTwoList;
+	/**手机端展商品价格*/
+	@TableField(exist = false)
+	private List<ProductPrice> priceList;
+
+
 
 
 }
