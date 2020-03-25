@@ -76,7 +76,7 @@ public class ProductCategoryController {
        QueryWrapper<ProductCategory> queryWrapper = new QueryWrapper<ProductCategory>();
        queryWrapper.eq("pid", productCategory.getPid());
        //--author:os_chengtgen---date:20190804 -----for: 分类字典页面显示错误,issues:377--------end
-
+       queryWrapper.orderByAsc("code");
        Page<ProductCategory> page = new Page<ProductCategory>(pageNo, pageSize);
        IPage<ProductCategory> pageList = productCategoryService.page(page, queryWrapper);
        result.setSuccess(true);
@@ -87,7 +87,10 @@ public class ProductCategoryController {
    @GetMapping(value = "/childList")
    public Result<List<ProductCategory>> queryPageList(ProductCategory productCategory,HttpServletRequest req) {
        Result<List<ProductCategory>> result = new Result<List<ProductCategory>>();
-       QueryWrapper<ProductCategory> queryWrapper = QueryGenerator.initQueryWrapper(productCategory, req.getParameterMap());
+//       QueryWrapper<ProductCategory> queryWrapper = QueryGenerator.initQueryWrapper(productCategory, req.getParameterMap());
+       QueryWrapper<ProductCategory> queryWrapper = new QueryWrapper<ProductCategory>();
+       queryWrapper.eq("pid",productCategory.getPid());
+       queryWrapper.orderByAsc("code");
        List<ProductCategory> list = productCategoryService.list(queryWrapper);
        result.setSuccess(true);
        result.setResult(list);
