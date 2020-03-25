@@ -40,5 +40,11 @@ public interface IProductInfoService extends IService<ProductInfo> {
     IPage<ProductInfo> queryAdsProductPage(Integer pageNo, Integer pageSize,Map paramMap);
 
 
+    /**
+     * 分类商品查询
+     */
+    IPage<ProductInfo> queryCategoryProductPage(Integer pageNo, Integer pageSize,Map paramMap);
+
+
 
 }

@@ -113,7 +113,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/v2/**", "anon");
 
 		/******* ufak *******/
-		filterChainDefinitionMap.put("/api/home/**", "anon");
+		filterChainDefinitionMap.put("/api/**", "anon");
 		/******* ufak *******/
 
 		//性能监控

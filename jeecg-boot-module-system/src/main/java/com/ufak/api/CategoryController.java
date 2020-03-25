@@ -1,17 +1,25 @@
 package com.ufak.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.product.entity.ProductCategory;
+import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.service.IProductCategoryService;
+import com.ufak.product.service.IProductInfoService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Api(tags="小程序分类API")
@@ -20,6 +28,8 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private IProductCategoryService productCategoryService;
+    @Autowired
+    private IProductInfoService productInfoService;
 
     /**
      * 查找一级分类
@@ -35,5 +45,18 @@ public class CategoryController {
         result.setSuccess(true);
         result.setResult(list);
         return result;
+    }
+
+    @GetMapping(value = "/product/list")
+    public Result<?> queryHomeProductPage(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                          @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                          HttpServletRequest req) {
+        String categoryId = req.getParameter("categoryId");
+        Map paramMap = new HashMap<>();
+        if(StringUtils.isNotBlank(categoryId)){
+            paramMap.put("categoryId",categoryId);
+        }
+        IPage<ProductInfo> pageList = productInfoService.queryCategoryProductPage(pageNo,pageSize,paramMap);
+        return Result.ok(pageList);
     }
 }
