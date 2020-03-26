@@ -98,4 +98,9 @@ public class ProductPrice  implements Serializable {
 	/** 规格名称 */
 	@TableField(exist = false)
 	private String specsName;
+	/** 规格图片 */
+	@TableField(exist = false)
+	private String specsImage;
+
+
 }

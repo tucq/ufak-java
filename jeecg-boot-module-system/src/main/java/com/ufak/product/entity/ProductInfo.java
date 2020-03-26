@@ -96,17 +96,15 @@ public class ProductInfo  implements Serializable {
     @ApiModelProperty(value = "修改时间")
 	private Date updateTime;
 
+	/**以下非库表字段**/
 	@TableField(exist = false)
 	private List<ProductSpecs> productSpecsList;
-
 	@TableField(exist = false)
 	private List<ProductSpecs> removeProductSpecsList;
-
 	@TableField(exist = false)
 	private String productTypeName;
 	@TableField(exist = false)
 	private String categoryCode;
-
 	/**手机端展示图片*/
 	@TableField(exist = false)
 	private String viewImage;

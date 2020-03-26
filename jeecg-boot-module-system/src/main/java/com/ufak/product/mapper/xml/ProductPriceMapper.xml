@@ -37,8 +37,10 @@
 
     <select id="queryProductPrice" resultType="com.ufak.product.entity.ProductPrice">
         SELECT
+        specs1.specs_image,
         price.specs1_id,
         price.specs2_id,
+        IF(ISNULL(specs2.specs_title),specs1.specs_title,CONCAT(specs1.specs_title,' ',specs2.specs_title)) as specs_name,
         price.price,
         price.virtual_price,
         price.stock,
