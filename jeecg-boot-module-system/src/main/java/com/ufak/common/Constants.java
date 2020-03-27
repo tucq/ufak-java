@@ -2,6 +2,12 @@ package com.ufak.common;
 
 public class Constants {
 
+    /**微信AppID*/
+    public static final String WX_APPID = "wxe9e09343d62da01f";
+    /**微信AppSecret*/
+    public static final String WX_SECRET = "046c21579935ec76aa485c55d9c427a8";
+
+
     //是否标识：0-是，1-否
     public static final String YES = "0";
     public static final String NO = "1";
