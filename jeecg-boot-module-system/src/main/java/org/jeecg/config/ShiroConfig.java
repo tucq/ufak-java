@@ -114,6 +114,7 @@ public class ShiroConfig {
 
 		/******* ufak *******/
 		filterChainDefinitionMap.put("/api/**", "anon");
+		filterChainDefinitionMap.put("/sys/getOpenid", "anon");
 		/******* ufak *******/
 
 		//性能监控
