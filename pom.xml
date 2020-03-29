@@ -324,6 +324,13 @@
 			<version>${aliyun.oss.version}</version>
 		</dependency>
 
+		<!-- 微信小程序要添加的依赖 -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.55</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>

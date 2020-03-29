@@ -3,6 +3,7 @@ package org.jeecg.modules.system.controller;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
+import com.ufak.common.AesUtil;
 import com.ufak.common.Constants;
 import com.ufak.common.HttpRequestUtil;
 import io.swagger.annotations.Api;
@@ -16,7 +17,6 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
-import org.jeecg.common.util.encryption.AesEncryptUtil;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -493,24 +493,35 @@ public class LoginController {
 		System.out.println("openid:" + openid);
 		//////////////// 2、对encryptedData加密数据进行AES解密 ////////////////
 		try {
-//			String result = AesUtil.decrypt(encryptedData, session_key, iv, "UTF-8");
-			String result = AesEncryptUtil.desEncrypt(encryptedData, session_key, iv);
+			String result = AesUtil.decrypt(encryptedData, session_key, iv, "UTF-8");
+//			String result = AesEncryptUtil.desEncrypt(encryptedData, session_key, iv);
 			if (null != result && result.length() > 0) {
 				map.put("status", 1);
 				map.put("msg", "解密成功");
 
 				JSONObject userInfoJSON = JSONObject.parseObject(result);
-				Map<String,Object> userInfo = new HashMap<String,Object>();
-				userInfo.put("openId", userInfoJSON.get("openId"));
-				userInfo.put("nickName", userInfoJSON.get("nickName"));
-				userInfo.put("gender", userInfoJSON.get("gender"));
-				userInfo.put("city", userInfoJSON.get("city"));
-				userInfo.put("province", userInfoJSON.get("province"));
-				userInfo.put("country", userInfoJSON.get("country"));
-				userInfo.put("avatarUrl", userInfoJSON.get("avatarUrl"));
-				userInfo.put("unionId", userInfoJSON.get("unionId"));
-				map.put("userInfo", userInfo);
-				System.out.println("map2:" + map);
+//				Map<String,Object> userInfo = new HashMap<String,Object>();
+//				userInfo.put("openId", userInfoJSON.get("openId"));
+//				userInfo.put("nickName", userInfoJSON.get("nickName"));
+//				userInfo.put("gender", userInfoJSON.get("gender"));
+//				userInfo.put("city", userInfoJSON.get("city"));
+//				userInfo.put("province", userInfoJSON.get("province"));
+//				userInfo.put("country", userInfoJSON.get("country"));
+//				userInfo.put("avatarUrl", userInfoJSON.get("avatarUrl"));
+//				userInfo.put("unionId", userInfoJSON.get("unionId"));
+//				map.put("userInfo", userInfo);
+//				System.out.println("map2:" + map);
+
+				SysUser sysUser = sysUserService.getUserByName(userInfoJSON.get("openId").toString());
+				if(sysUser == null){
+					sysUser = this.addWxUser(userInfoJSON);//保存用户信息
+				}
+				String token = this.wxAccess(sysUser);
+				map.put("WX_TOKEN",token);
+				map.put("userId",sysUser.getId());
+				map.put("nickname",sysUser.getRealname());
+				map.put("avatarUrl",sysUser.getAvatar());
+
 				return map;
 			}
 		} catch (Exception e) {
@@ -521,5 +532,45 @@ public class LoginController {
 		System.out.println("map3:" + map);
 		return map;
 	}
+
+
+	/**
+	 * 保存微信小程序用户信息
+	 * @param userInfoJSON
+	 * @return
+	 */
+	private SysUser addWxUser(JSONObject userInfoJSON){
+		SysUser user = new SysUser();
+		user.setUsername((String)userInfoJSON.get("openId"));
+		user.setPassword((String)userInfoJSON.get("openId"));
+		user.setRealname((String)userInfoJSON.get("nickName"));
+		user.setAvatar((String) userInfoJSON.get("avatarUrl"));
+		user.setOrgCode(Constants.CLIENT_ORG_CODE);
+		user.setCreateTime(new Date());//设置创建时间
+		String salt = oConvertUtils.randomGen(8);
+		user.setSalt(salt);
+		String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), salt);
+		user.setPassword(passwordEncode);
+		user.setStatus(1);
+		user.setDelFlag("0");
+		sysUserService.save(user);
+		return user;
+	}
+
+	/**
+	 * 微信授权
+	 * @return
+	 */
+	private String wxAccess(SysUser sysUser){
+		String syspassword = sysUser.getPassword();
+		String username = sysUser.getUsername();
+		// 生成token
+		String token = JwtUtil.sign(username, syspassword);
+		// 设置token缓存有效时间
+		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+		return token;
+	}
+
 
 }

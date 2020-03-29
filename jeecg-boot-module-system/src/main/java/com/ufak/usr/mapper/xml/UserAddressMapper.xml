@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ufak.usr.mapper.UserAddressMapper">
+
+    <select id="selectPage2" parameterType="map" resultType="org.jeecg.modules.system.entity.SysUser">
+        SELECT
+        DISTINCT usr.*
+        FROM
+        sys_user usr
+        LEFT JOIN t_user_address addr ON usr.id = addr.user_id
+        <include refid="where"/>
+        ORDER BY
+        usr.create_time desc
+        limit #{start},#{size}
+    </select>
+
+    <select id="totalCount2" parameterType="map" resultType="long">
+        SELECT count(1) FROM sys_user usr
+        LEFT JOIN t_user_address addr ON usr.id = addr.user_id
+        <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="username != null and username != ''">
+                AND addr.username LIKE CONCAT('%',#{username},'%')
+            </if>
+            <if test="telephone != null and telephone != ''">
+                AND addr.telephone LIKE CONCAT('%',#{telephone},'%')
+            </if>
+            <if test="orgCode != null and orgCode != ''">
+                AND usr.org_code = #{orgCode}
+            </if>
+
+        </where>
+    </sql>
+
+</mapper>
