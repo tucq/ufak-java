@@ -104,14 +104,13 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	/**
 	 * 通过id删除
 	 *
-	 * @param id
 	 * @return
 	 */
 	@AutoLog(value = "购物车-通过id删除")
 	@ApiOperation(value="购物车-通过id删除", notes="购物车-通过id删除")
-	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		shoppingCarService.removeById(id);
+	@PostMapping(value = "/delete")
+	public Result<?> delete(@RequestBody ShoppingCar shoppingCar) {
+		shoppingCarService.removeById(shoppingCar.getId());
 		return Result.ok("删除成功!");
 	}
 	
