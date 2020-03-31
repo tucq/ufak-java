@@ -2,7 +2,6 @@ package com.ufak.usr.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.service.IShoppingCarService;
@@ -13,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,8 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
- /**
+/**
  * @Description: 购物车
  * @Author: jeecg-boot
  * @Date:   2020-03-30
@@ -41,32 +41,31 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	/**
 	 * 分页列表查询
 	 *
-	 * @param shoppingCar
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "购物车-分页列表查询")
 	@ApiOperation(value="购物车-分页列表查询", notes="购物车-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(ShoppingCar shoppingCar,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ShoppingCar> queryWrapper = QueryGenerator.initQueryWrapper(shoppingCar, req.getParameterMap());
-		Page<ShoppingCar> page = new Page<ShoppingCar>(pageNo, pageSize);
-		IPage<ShoppingCar> pageList = shoppingCarService.page(page, queryWrapper);
+		String userId = req.getParameter("userId");
+		Map paramMap = new HashMap<>();
+		if(StringUtils.isNotBlank(userId)){
+			paramMap.put("userId",userId);
+		}
+		IPage<ShoppingCar> pageList = shoppingCarService.selectPage(pageNo,pageSize,paramMap);
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 * 添加
 	 *
 	 * @param shoppingCar
 	 * @return
 	 */
-	@AutoLog(value = "购物车-添加")
 	@ApiOperation(value="购物车-添加", notes="购物车-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ShoppingCar shoppingCar) {

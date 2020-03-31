@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ufak.usr.mapper.ShoppingCarMapper">
+    <select id="selectPage" parameterType="map" resultType="com.ufak.usr.entity.ShoppingCar">
+        SELECT
+        car.*,
+        info.`name` as product_name,
+        substring_index(info.image, ',', 1) as view_image,
+        IF(ISNULL(specs2.specs_title),specs1.specs_title,CONCAT(specs1.specs_title,' ',specs2.specs_title)) as specs_name,
+        price.price,
+        price.stock
+        FROM
+        t_shopping_car car
+        LEFT JOIN t_product_info info ON car.product_id = info.id
+        LEFT JOIN t_product_specs specs1 ON car.specs1_id = specs1.id
+        LEFT JOIN t_product_specs specs2 ON car.specs2_id = specs2.id
+        LEFT JOIN t_product_price price ON car.product_id = price.product_id AND car.specs1_id = price.specs1_id AND IF(ISNULL(price.specs2_id),1=1,car.specs2_id = price.specs2_id)
+        <include refid="where"/>
+        ORDER BY
+        car.user_id , car.create_time desc
+        limit #{start},#{size}
+    </select>
 
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_shopping_car car
+        <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="userId != null and userId != ''">
+                AND car.user_id = #{userId}
+            </if>
+        </where>
+    </sql>
 </mapper>

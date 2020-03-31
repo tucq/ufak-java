@@ -3,6 +3,9 @@ package com.ufak.usr.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ufak.usr.entity.ShoppingCar;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description: 购物车
  * @Author: jeecg-boot
@@ -11,4 +14,7 @@ import com.ufak.usr.entity.ShoppingCar;
  */
 public interface ShoppingCarMapper extends BaseMapper<ShoppingCar> {
 
+    List<ShoppingCar> selectPage(Map paramMap);
+
+    long totalCount(Map paramMap);
 }

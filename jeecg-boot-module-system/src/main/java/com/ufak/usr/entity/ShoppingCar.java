@@ -1,6 +1,7 @@
 package com.ufak.usr.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -21,10 +22,10 @@ import java.util.Date;
  * @Version: V1.0
  */
 @Data
-@TableName("t_shopping_cart")
+@TableName("t_shopping_car")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="t_shopping_cart对象", description="购物车")
+@ApiModel(value="t_shopping_car对象", description="购物车")
 public class ShoppingCar {
     
 	/**id*/
@@ -57,5 +58,20 @@ public class ShoppingCar {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
 	private Date createTime;
+
+	/**商品图片*/
+	@TableField(exist = false)
+	private String viewImage;
+	@TableField(exist = false)
+	private String productName;
+	/**商品格式*/
+	@TableField(exist = false)
+	private String specsName;
+	/**商品价格*/
+	@TableField(exist = false)
+	private String price;
+	@TableField(exist = false)
+	private String stock;
+
 
 }
