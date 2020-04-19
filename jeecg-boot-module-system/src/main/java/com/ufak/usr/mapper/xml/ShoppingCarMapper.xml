@@ -31,6 +31,9 @@
             <if test="userId != null and userId != ''">
                 AND car.user_id = #{userId}
             </if>
+            <if test="isCheck != null and isCheck != ''">
+                AND car.is_check = #{isCheck}
+            </if>
         </where>
     </sql>
 </mapper>

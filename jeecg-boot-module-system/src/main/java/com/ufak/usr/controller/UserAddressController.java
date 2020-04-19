@@ -161,7 +161,14 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 		if(list.size() > 0){
 			return Result.ok(list.get(0));
 		}else{
-			return Result.ok(null);
+			QueryWrapper qw2 = new QueryWrapper();
+			qw2.eq("user_id",userId);
+			List<UserAddress> list2 = userAddressService.list(qw2);
+			if(list2.size() > 0){
+				return Result.ok(list2.get(0));
+			}else{
+				return Result.ok(null);
+			}
 		}
 	}
 	

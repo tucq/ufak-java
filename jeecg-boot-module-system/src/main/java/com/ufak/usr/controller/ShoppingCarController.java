@@ -53,9 +53,13 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		String userId = req.getParameter("userId");
+		String isCheck = req.getParameter("isCheck");
 		Map paramMap = new HashMap<>();
 		if(StringUtils.isNotBlank(userId)){
 			paramMap.put("userId",userId);
+		}
+		if(StringUtils.isNotBlank(isCheck)){
+			paramMap.put("isCheck",isCheck);
 		}
 		IPage<ShoppingCar> pageList = shoppingCarService.selectPage(pageNo,pageSize,paramMap);
 		return Result.ok(pageList);
