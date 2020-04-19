@@ -1,6 +1,7 @@
 package com.ufak.usr.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
@@ -113,6 +114,39 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		shoppingCarService.removeById(shoppingCar.getId());
 		return Result.ok("删除成功!");
 	}
+
+	/**
+	 * 更新选中状态
+	 * @param shoppingCar
+	 * @return
+	 */
+	@PostMapping(value = "/checked")
+	public Result<?> checked(@RequestBody ShoppingCar shoppingCar) {
+		shoppingCarService.updateById(shoppingCar);
+		return Result.ok("更新成功!");
+	}
+
+	@PostMapping(value = "/updateBuyNum")
+	public Result<?> updateBuyNum(@RequestBody ShoppingCar shoppingCar) {
+		shoppingCarService.updateById(shoppingCar);
+		return Result.ok("更新成功!");
+	}
+
+	/**
+	 * 更新选中状态
+	 * @param shoppingCar
+	 * @return
+	 */
+	@PostMapping(value = "/allChecked")
+	public Result<?> allChecked(@RequestBody ShoppingCar shoppingCar) {
+		UpdateWrapper uw = new UpdateWrapper();
+		uw.eq("user_id",shoppingCar.getUserId());
+		uw.set("is_check",shoppingCar.getIsCheck());
+		shoppingCarService.update(uw);
+		return Result.ok("更新成功!");
+	}
+
+
 	
 	/**
 	 * 批量删除

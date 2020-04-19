@@ -52,6 +52,9 @@ public class ShoppingCar {
 	@Excel(name = "购买数量", width = 15)
     @ApiModelProperty(value = "购买数量")
 	private Integer buyNum;
+	@Excel(name = "是否选中", width = 15)
+	@ApiModelProperty(value = "是否选中")
+	private String isCheck;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

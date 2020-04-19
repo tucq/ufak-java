@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -149,6 +150,19 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		userAddressService.removeById(id);
 		return Result.ok("删除成功!");
+	}
+
+	@GetMapping(value = "/getAddress")
+	public Result<?> getAddress(@RequestParam(name="userId",required=true) String userId) {
+		QueryWrapper qw = new QueryWrapper();
+		qw.eq("user_id",userId);
+		qw.eq("defaule","0");
+		List<UserAddress> list = userAddressService.list(qw);
+		if(list.size() > 0){
+			return Result.ok(list.get(0));
+		}else{
+			return Result.ok(null);
+		}
 	}
 	
 	/**
