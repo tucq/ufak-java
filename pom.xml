@@ -87,11 +87,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-	    <!-- <dependency>
+		<!-- springBoot工程实现热部署 -->
+	    <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
-		</dependency> -->
+			<scope>runtime</scope>
+		</dependency>
 		
 		<!-- commons -->
 		<dependency>

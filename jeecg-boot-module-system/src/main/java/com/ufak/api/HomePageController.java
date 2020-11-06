@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,5 +109,10 @@ public class HomePageController {
         }
         IPage<ProductInfo> pageList = productInfoService.queryAdsProductPage(pageNo,pageSize,paramMap);
         return Result.ok(pageList);
+    }
+
+    @GetMapping(value = "/notifyUrl")
+    public Result<?> notifyUrl(HttpServletRequest req, HttpServletResponse res) {
+        return Result.ok("支付成功");
     }
 }
