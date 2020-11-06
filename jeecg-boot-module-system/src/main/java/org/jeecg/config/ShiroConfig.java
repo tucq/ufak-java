@@ -115,6 +115,7 @@ public class ShiroConfig {
 		/******* ufak *******/
 		filterChainDefinitionMap.put("/api/**", "anon");
 		filterChainDefinitionMap.put("/sys/getOpenid", "anon");
+		filterChainDefinitionMap.put("/pay/call/back/wxPay/url", "anon");//支付回调地址
 		/******* ufak *******/
 
 		//性能监控
