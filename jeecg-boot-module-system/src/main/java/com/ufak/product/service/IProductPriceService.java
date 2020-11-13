@@ -31,4 +31,14 @@ public interface IProductPriceService extends IService<ProductPrice> {
      * @return
      */
     List<ProductPrice> queryProductPrice(String productId);
+
+    /**
+     * 查询价格
+     * @param productId
+     * @param specs1Id
+     * @param specs2Id
+     * @return
+     */
+    ProductPrice getPrice(String productId,String specs1Id,String specs2Id);
+
 }

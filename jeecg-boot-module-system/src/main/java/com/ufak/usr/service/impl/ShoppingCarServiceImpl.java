@@ -1,6 +1,7 @@
 package com.ufak.usr.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,5 +36,13 @@ public class ShoppingCarServiceImpl extends ServiceImpl<ShoppingCarMapper, Shopp
         page.setRecords(list);
         page.setTotal(totalCount);
         return page;
+    }
+
+    @Override
+    public List<ShoppingCar> getPayforList(String userId) {
+        QueryWrapper<ShoppingCar> qw = new QueryWrapper<>();
+        qw.eq("user_id",userId);
+        qw.eq("is_check","0");
+        return this.list(qw);
     }
 }

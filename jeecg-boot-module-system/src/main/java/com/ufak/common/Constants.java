@@ -17,6 +17,12 @@ public class Constants {
     /**支付回调通知地址*/
     public static final String NOTIFY_URL = "https://youfuankang.com/jeecg-boot/pay/call/back/wxPay/url";
 
+    /**返回微信支付通知成功状态码*/
+    public static final String resSuccessXml = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
+
+    /**返回微信支付通知失败状态码*/
+    public static final String resFailXml = "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[ERROR]]></return_msg></xml>";
+
     //是否标识：0-是，1-否
     public static final String YES = "0";
     public static final String NO = "1";
@@ -40,6 +46,13 @@ public class Constants {
 
     /**客户所属机构*/
     public static final String CLIENT_ORG_CODE = "A04";
+
+    /**订单状态*/
+    public static final String WAIT_PAY = "0";//待付款
+    public static final String WAIT_SEND = "1";//待发货
+    public static final String WAIT_RECEIVE = "2";//待收货
+    public static final String CANCELLED = "3";//已取消
+    public static final String COMPLETED = "4";//已完成
 
 
 

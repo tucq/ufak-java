@@ -3,7 +3,12 @@ package com.ufak.usr.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ufak.product.entity.ProductInfo;
+import com.ufak.product.entity.ProductPrice;
+import com.ufak.product.entity.ProductSpecs;
+import com.ufak.product.service.IProductInfoService;
 import com.ufak.product.service.IProductPriceService;
+import com.ufak.product.service.IProductSpecsService;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.service.IShoppingCarService;
 import io.swagger.annotations.Api;
@@ -36,8 +41,12 @@ import java.util.Map;
 public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppingCarService> {
 	@Autowired
 	private IShoppingCarService shoppingCarService;
-	 @Autowired
-	 private IProductPriceService productPriceService;
+	@Autowired
+	private IProductInfoService productInfoService;
+	@Autowired
+	private IProductSpecsService productSpecsService;
+	@Autowired
+	private IProductPriceService productPriceService;
 	
 	/**
 	 * 分页列表查询
@@ -105,7 +114,44 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		shoppingCarService.updateById(shoppingCar);
 		return Result.ok("编辑成功!");
 	}
-	
+
+
+	/**
+	 * 立即购买查商品信息
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/buyNow")
+	public Result<?> buyNow(HttpServletRequest req) {
+		String productId = req.getParameter("productId");
+		String specs1Id = req.getParameter("specs1Id");
+		String specs2Id = req.getParameter("specs2Id");
+		String buyNum = req.getParameter("buyNum");
+		ShoppingCar shoppingCar= new ShoppingCar();
+
+		ProductInfo product = productInfoService.getById(productId);
+		ProductSpecs specs1 = productSpecsService.getById(specs1Id);
+		QueryWrapper<ProductPrice> qryPrice = new QueryWrapper<>();
+		qryPrice.eq("product_id",productId);
+		qryPrice.eq("specs1_id",specs1Id);
+		if(StringUtils.isNotBlank(specs2Id) && !"null".equals(specs2Id)){
+			qryPrice.eq("specs2_id",specs2Id);
+		}
+		ProductPrice price = productPriceService.getOne(qryPrice);
+		shoppingCar.setProductName(product.getName());
+		shoppingCar.setViewImage(product.getImage().split(",")[0]);
+		String specsName = specs1.getSpecsTitle();
+		if(StringUtils.isNotBlank(specs2Id) && !"null".equals(specs2Id)){
+			ProductSpecs specs2 = productSpecsService.getById(specs2Id);
+			specsName = " " + specs2.getSpecsTitle();
+		}
+		shoppingCar.setSpecsName(specsName);
+		shoppingCar.setPrice(price.getPrice().toString());
+		shoppingCar.setBuyNum(Integer.valueOf(buyNum));
+		return Result.ok(shoppingCar);
+	}
+
+
 	/**
 	 * 通过id删除
 	 *

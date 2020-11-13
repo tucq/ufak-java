@@ -1,11 +1,13 @@
 package com.ufak.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.mapper.ProductPriceMapper;
 import com.ufak.product.service.IProductPriceService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +41,16 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper, Pro
     @Override
     public List<ProductPrice> queryProductPrice(String productId) {
         return productPriceMapper.queryProductPrice(productId);
+    }
+
+    @Override
+    public ProductPrice getPrice(String productId, String specs1Id, String specs2Id) {
+        QueryWrapper<ProductPrice> qw = new QueryWrapper<>();
+        qw.eq("product_id",productId);
+        qw.eq("specs1_id",specs1Id);
+        if(StringUtils.isNotBlank(specs2Id) && !"null".equals(specs2Id)){
+            qw.eq("specs2_id",specs2Id);
+        }
+        return this.getOne(qw);
     }
 }

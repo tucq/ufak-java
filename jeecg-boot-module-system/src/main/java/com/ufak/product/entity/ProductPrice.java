@@ -1,9 +1,6 @@
 package com.ufak.product.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -63,6 +60,10 @@ public class ProductPrice  implements Serializable {
 	@Excel(name = "库存", width = 15)
     @ApiModelProperty(value = "库存")
 	private Integer stock;
+	@Excel(name = "版本号", width = 15)
+	@ApiModelProperty(value = "版本号")
+	@Version
+	private Integer version;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
