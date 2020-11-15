@@ -1,6 +1,7 @@
 package com.ufak.order.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -51,4 +52,12 @@ public class OrderDetail {
 	@Excel(name = "售卖价格", width = 15)
     @ApiModelProperty(value = "售卖价格")
 	private java.math.BigDecimal price;
+
+	@TableField(exist = false)
+	private String productName;
+	@TableField(exist = false)
+	private String viewImage;
+	@TableField(exist = false)
+	private String specsName;
+
 }

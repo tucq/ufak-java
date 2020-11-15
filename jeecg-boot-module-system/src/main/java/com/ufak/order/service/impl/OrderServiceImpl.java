@@ -1,12 +1,16 @@
 package com.ufak.order.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
 import com.ufak.order.mapper.OrderMapper;
 import com.ufak.order.service.IOrderDetailService;
 import com.ufak.order.service.IOrderService;
+import com.ufak.order.service.IOrderUnpaidService;
 import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
@@ -19,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 订单主表
@@ -35,6 +40,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private IOrderDetailService orderDetailService;
     @Autowired
     private IProductPriceService productPriceService;
+    @Autowired
+    private IOrderUnpaidService orderUnpaidService;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -92,4 +101,32 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderDetail;
     }
 
+    @Override
+    public IPage<Order> queryAppPageList(Integer pageNo, Integer pageSize, Map paramMap) {
+        int start = (pageNo - 1) * pageSize;
+        paramMap.put("start",start);
+        paramMap.put("size",pageSize);
+        List<Order> list = orderMapper.queryAppPageList(paramMap);
+        for(Order order : list){
+            List orderDetails = orderDetailService.queryByOrderId(order.getId());
+            order.setOrderDetails(orderDetails);
+        }
+        long totalCount = orderMapper.totalCount(paramMap);
+        Page page = new Page(pageNo, pageSize);
+        page.setRecords(list);
+        page.setTotal(totalCount);
+        return page;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteOrder(String orderId) throws Exception {
+        this.removeById(orderId);
+        QueryWrapper<OrderDetail> qryDetail = new QueryWrapper<>();
+        qryDetail.eq("order_id",orderId);
+        orderDetailService.remove(qryDetail);
+        QueryWrapper qryUnpaid = new QueryWrapper<>();
+        qryUnpaid.eq("order_id",orderId);
+        orderUnpaidService.remove(qryUnpaid);
+    }
 }

@@ -5,7 +5,7 @@
         SELECT
         car.*,
         info.`name` as product_name,
-        substring_index(info.image, ',', 1) as view_image,
+        specs1.specs_image as view_image,
         IF(ISNULL(specs2.specs_title),specs1.specs_title,CONCAT(specs1.specs_title,' ',specs2.specs_title)) as specs_name,
         price.price,
         price.stock

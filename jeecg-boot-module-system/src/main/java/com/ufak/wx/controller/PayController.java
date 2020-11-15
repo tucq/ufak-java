@@ -143,6 +143,8 @@ public class PayController {
                 order.setCreateTime(new Date(Long.valueOf(createTime)));
                 try {
                     orderService.submitOrder(order,payInfo);
+                    finalpackage.put("orderId",order.getId());//保存成功后返回orderId
+                    finalpackage.put("createTime",createTime);//返回创建时间，用于前端计算失效时间
                     return Result.ok(finalpackage);
                 }catch (JeecgBootException e){
                     return Result.error(e.getMessage());// 乐观锁检测库存已被更改

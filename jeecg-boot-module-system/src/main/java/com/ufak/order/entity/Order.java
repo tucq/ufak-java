@@ -1,6 +1,7 @@
 package com.ufak.order.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -11,6 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Description: 订单主表
@@ -112,4 +116,19 @@ public class Order {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "修改时间")
 	private java.util.Date updateTime;
+
+	/**实付金额*/
+	@TableField(exist = false)
+	private java.math.BigDecimal payAmount;
+	/**订单明细*/
+	@TableField(exist = false)
+	private List<OrderDetail> orderDetails;
+
+	public List<OrderDetail> getOrderDetails() {
+		if(orderDetails == null){
+			orderDetails = new ArrayList<>();
+		}
+		return orderDetails;
+	}
+
 }

@@ -29,7 +29,7 @@ import java.util.Arrays;
 @Slf4j
 @Api(tags="订单明细")
 @RestController
-@RequestMapping("/com.ufak/orderDetail")
+@RequestMapping("/orderDetail")
 public class OrderDetailController extends JeecgController<OrderDetail, IOrderDetailService> {
 	@Autowired
 	private IOrderDetailService orderDetailService;
