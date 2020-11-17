@@ -568,7 +568,8 @@ public class LoginController {
 		String token = JwtUtil.sign(username, syspassword);
 		// 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+//		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token,  7 * 24 * 60 * 60 * 1000);//修改客户登录授权时间 7天时间
 		return token;
 	}
 
