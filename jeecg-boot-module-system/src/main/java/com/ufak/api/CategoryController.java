@@ -54,6 +54,7 @@ public class CategoryController {
                                           HttpServletRequest req) {
         String categoryId = req.getParameter("categoryId");
         String orderByValue = req.getParameter("orderByValue");
+        String productName = req.getParameter("productName");
         Map paramMap = new HashMap<>();
         if(StringUtils.isNotBlank(categoryId)){
             paramMap.put("categoryId",categoryId);
@@ -66,6 +67,9 @@ public class CategoryController {
             }else if(Constants.ORDERY_BY_GD.equals(orderByValue)){
                 paramMap.put("price","desc");
             }
+        }
+        if(StringUtils.isNotBlank(productName)){    // 名称搜索
+            paramMap.put("productName",productName);
         }
 
         IPage<ProductInfo> pageList = productInfoService.queryPhoneProductPage(pageNo,pageSize,paramMap);

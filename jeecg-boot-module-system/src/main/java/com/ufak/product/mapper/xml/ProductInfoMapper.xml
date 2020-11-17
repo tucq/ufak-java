@@ -62,6 +62,9 @@
             <if test="categoryId != null and categoryId != ''">
                 AND info.product_type = #{categoryId}
             </if>
+            <if test="productName != null and productName != ''">
+                AND (info.name LIKE CONCAT('%',#{productName},'%') or info.description LIKE CONCAT('%',#{productName},'%'))
+            </if>
         </where>
     </sql>
     <sql id="phoneProductOrderBy">
