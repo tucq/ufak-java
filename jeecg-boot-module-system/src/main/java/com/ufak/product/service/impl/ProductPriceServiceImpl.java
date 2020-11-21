@@ -8,6 +8,7 @@ import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.mapper.ProductPriceMapper;
 import com.ufak.product.service.IProductPriceService;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.exception.JeecgBootException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,15 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper, Pro
             qw.eq("specs2_id",specs2Id);
         }
         return this.getOne(qw);
+    }
+
+    @Override
+    public void returnStock(String productId, String specs1Id, String specs2Id, Integer buyNum) throws Exception {
+        ProductPrice price = this.getPrice(productId,specs1Id,specs2Id);
+        price.setStock(price.getStock() + buyNum);// 订单取消后库存加回去
+        boolean b = this.updateById(price);// 采用乐观锁更新库存
+        if(!b){
+            throw new JeecgBootException("系统繁忙，请稍候重试！");
+        }
     }
 }

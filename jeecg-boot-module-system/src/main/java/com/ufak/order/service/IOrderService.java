@@ -31,6 +31,12 @@ public interface IOrderService extends IService<Order> {
     IPage<Order> queryAppPageList(Integer pageNo, Integer pageSize, Map paramMap);
 
     /**
+     * 订单取消
+     * @param orderId
+     */
+    void cancelOrder(String orderId) throws Exception;
+
+    /**
      * 删除订单
      * @param orderId
      * @throws Exception

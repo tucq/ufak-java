@@ -3,6 +3,7 @@ package com.ufak.order.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
 import com.ufak.order.service.IOrderDetailService;
@@ -13,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,6 +44,8 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	private IOrderService orderService;
 	@Autowired
 	private IOrderDetailService orderDetailService;
+	@Autowired
+	private RedisUtil redisUtil;
 	
 	/**
 	 * 分页列表查询
@@ -101,6 +106,41 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 		List<OrderDetail> orderDetails = orderDetailService.queryByOrderId(orderId);
 		order.setOrderDetails(orderDetails);
 		return Result.ok(order);
+	}
+
+	/**
+	 * 订单取消
+	 * @param orderId
+	 * @return
+	 */
+	@PostMapping(value = "/cancel")
+	public Result<?> cancel(@RequestParam(name="orderId",required=true) String orderId) {
+		try {
+			Order order = orderService.getById(orderId);
+			if(order == null){
+				return Result.error("该订单号不存在");
+			}
+			if(!Constants.WAIT_PAY.equals(order.getOrderStatus())){
+				return Result.error("非待支付状态订单无法取消");
+			}
+			orderService.cancelOrder(orderId);
+			return Result.ok("订单取消成功");
+		}catch (JeecgBootException e){
+			return Result.error(e.getMessage());// 乐观锁检测库存已被更改
+		}catch (Exception e) {
+			log.error("订单取消:{}",e);
+			return Result.error("订单取消异常，请联系客服！");
+		}
+	}
+
+	@PostMapping(value = "/test")
+	public Result<?> test(@RequestParam(name="orderId",required=true) String orderId) {
+//		redisUtil.set("OrderKey_"+orderId,orderId,10);
+//		redisUtil.set("OtherKey_"+orderId,orderId,10);
+		redisUtil.set("OrderKey_"+orderId,orderId,10);
+		redisUtil.set("OtherKey_"+orderId,orderId,10);
+		System.out.println("订单取消成功22");
+		return Result.ok("订单取消成功");
 	}
 
 	

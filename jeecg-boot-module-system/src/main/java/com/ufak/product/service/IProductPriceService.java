@@ -41,4 +41,14 @@ public interface IProductPriceService extends IService<ProductPrice> {
      */
     ProductPrice getPrice(String productId,String specs1Id,String specs2Id);
 
+    /**
+     * 订单取消返回库存
+     * @param productId
+     * @param specs1Id
+     * @param specs2Id
+     * @param buyNum
+     * @throws Exception
+     */
+    void returnStock(String productId,String specs1Id,String specs2Id,Integer buyNum) throws Exception;
+
 }

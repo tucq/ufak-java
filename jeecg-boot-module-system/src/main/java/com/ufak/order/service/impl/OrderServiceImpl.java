@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
 import com.ufak.order.mapper.OrderMapper;
@@ -15,8 +16,10 @@ import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.service.IShoppingCarService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,7 @@ import java.util.Map;
  * @Date:   2020-11-06
  * @Version: V1.0
  */
+@Slf4j
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
@@ -44,6 +48,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private IOrderUnpaidService orderUnpaidService;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -86,6 +92,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         }
 
+        System.out.println("System.currentTimeMillis()="+System.currentTimeMillis()+" , order.getCreateTime()="+order.getCreateTime().getTime());
+
+        long expireTime = (order.getCreateTime().getTime() + 30 * 60 * 1000 - System.currentTimeMillis()) / 1000;
+        log.info("订单提交失效时间为："+expireTime+" 秒");
+        redisUtil.set(Constants.ORDER_KEY_PREFIX + orderId,orderId,expireTime);//Redis 设置失效时间
     }
 
     private OrderDetail setOrderDetail(String orderId,String productId,String specs1Id,String specs2Id,String buyNum,BigDecimal price){
@@ -116,6 +127,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         page.setRecords(list);
         page.setTotal(totalCount);
         return page;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelOrder(String orderId) throws Exception{
+        Order order = new Order();
+        order.setId(orderId);
+        order.setOrderStatus(Constants.CANCELLED);
+        this.updateById(order);
+
+        QueryWrapper<OrderDetail> qry = new QueryWrapper<>();
+        qry.eq("order_id",orderId);
+        List<OrderDetail> orderDetails = orderDetailService.list(qry);
+        for(OrderDetail detail : orderDetails) {
+            productPriceService.returnStock(detail.getProductId(),detail.getSpecs1Id(),detail.getSpecs2Id(),detail.getBuyNum());
+        }
     }
 
     @Override

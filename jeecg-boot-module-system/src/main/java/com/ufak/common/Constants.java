@@ -23,6 +23,8 @@ public class Constants {
     /**返回微信支付通知失败状态码*/
     public static final String resFailXml = "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[ERROR]]></return_msg></xml>";
 
+    public static final String ORDER_KEY_PREFIX = "OrderKey_";
+
     //是否标识：0-是，1-否
     public static final String YES = "0";
     public static final String NO = "1";
