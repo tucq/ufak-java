@@ -22,6 +22,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.MD5Util;
+import org.jeecg.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,20 +52,13 @@ public class PayController {
     private IShoppingCarService shoppingCarService;
     @Autowired
     private IProductInfoService productInfoService;
+    @Autowired
+    private RedisUtil redisUtil;
 
     private String randomString = PayCommonUtil.getRandomString(32);
 
-    /**
-     * 当返回成功xml
-     */
-    private String resSuccessXml = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
 
-    /**
-     * 返回失败xml
-     */
-
-
-    /**
+    /** 微信订单支付
      * @param request
      * @return
      */
@@ -274,7 +268,7 @@ public class PayController {
                     if (PayCommonUtil.isTenpaySign(params)) {
                         log.info("wxNotify:微信支付----返回成功");
                         //微信支付签名验证成功
-                        resXml = resSuccessXml;
+                        resXml = Constants.resSuccessXml;
 
                         String outTradeNo = params.get("out_trade_no");
                         String transactionId = params.get("transaction_id");
@@ -295,6 +289,7 @@ public class PayController {
                             order.setCashFee(Integer.valueOf(cashFee));
                             order.setResultCode(resultCode);
                             orderService.updateById(order);
+                            redisUtil.del(Constants.ORDER_KEY_PREFIX + order.getId());//redis 移除订单key
                             log.info("wxNotify:微信支付成功回调----更新订单状态");
                         }else{
                             log.info("wxNotify:微信支付成功回调----该订单状态已更新，不做任务处理");
