@@ -61,6 +61,8 @@ public class Order {
 	@Excel(name = "优惠券", width = 15)
     @ApiModelProperty(value = "优惠券")
 	private java.math.BigDecimal couponAmount;
+	/**实付金额*/
+	private java.math.BigDecimal paymentAmount;
 	/**订单状态: 0-待付款,1-待发货,2-待收货,3-已取消,4-已完成*/
 	@Excel(name = "订单状态: 0-待付款,1-待发货,2-待收货,3-已取消,4-已完成", width = 15)
     @ApiModelProperty(value = "订单状态: 0-待付款,1-待发货,2-待收货,3-已取消,4-已完成")
