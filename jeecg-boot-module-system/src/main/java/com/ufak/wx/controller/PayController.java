@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ * 微信支付
  * Created by Administrator on 2020/11/4.
  */
 @Slf4j
@@ -219,9 +220,7 @@ public class PayController {
         String sign = PayCommonUtil.createSign("UTF-8", parameterMap);
         parameterMap.put("sign", sign);
         String requestXML = PayCommonUtil.getRequestXml(parameterMap);
-        log.info("统一下单请求xml参数=" + requestXML);
-        String result = HttpRequestUtil.sendPost("https://api.mch.weixin.qq.com/pay/unifiedorder",requestXML);
-        log.info("统一下单返回xml参数=" + result);
+        String result = HttpRequestUtil.sendPost(Constants.UNIFIEDORDER_URL,requestXML);
         Map<String, String> map = null;
         try {
             map = PayCommonUtil.doXMLParse(result);
@@ -245,7 +244,6 @@ public class PayController {
     @RequestMapping(value = "/call/back/wxPay/url", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public void wxNotify(HttpServletRequest request, HttpServletResponse response) throws IOException, JDOMException {
-        log.info("--------------微信支付回调开始----------");
         String resXml = "";
         InputStream inStream;
         try{
@@ -266,7 +264,6 @@ public class PayController {
             if("SUCCESS".equals(params.get("return_code"))){ //微信支付通知返回状态码 （此字段是通信标识，非交易标识，交易是否成功需要查看result_code来判断）
                 if("SUCCESS".equals(params.get("result_code"))){ //业务结果
                     if (PayCommonUtil.isTenpaySign(params)) {
-                        log.info("wxNotify:微信支付----返回成功");
                         //微信支付签名验证成功
                         resXml = Constants.resSuccessXml;
 
@@ -290,7 +287,7 @@ public class PayController {
                             order.setResultCode(resultCode);
                             orderService.updateById(order);
                             redisUtil.del(Constants.ORDER_KEY_PREFIX + order.getId());//redis 移除订单key
-                            log.info("wxNotify:微信支付成功回调----更新订单状态");
+//                            log.info("wxNotify:微信支付成功回调----更新订单状态");
                         }else{
                             log.info("wxNotify:微信支付成功回调----该订单状态已更新，不做任务处理");
                         }
