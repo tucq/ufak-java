@@ -58,6 +58,8 @@ public class ProductInfo  implements Serializable {
 	@Excel(name = "销量", width = 15)
     @ApiModelProperty(value = "销量")
 	private Integer salesVolume;
+	@ApiModelProperty(value = "虚拟销量")
+	private Integer virtualVolume;
 	/**服务*/
 	@Excel(name = "服务", width = 15)
     @ApiModelProperty(value = "服务")
@@ -75,6 +77,19 @@ public class ProductInfo  implements Serializable {
     @ApiModelProperty(value = "上下架标识：0-上架，1-下架")
 	@Dict(dicCode = "product_state")
 	private String state;
+	@ApiModelProperty(value = "运费")
+	private BigDecimal freightAmount;
+	@Excel(name = "推荐理由", width = 15)
+	@ApiModelProperty(value = "推荐理由")
+	private String keyPoint;
+	/**换货有效期*/
+	@Excel(name = "换货有效期", width = 15)
+	@ApiModelProperty(value = "换货有效期")
+	private Integer barterValidity;
+	/**维保有效期*/
+	@Excel(name = "维保有效期", width = 15)
+	@ApiModelProperty(value = "维保有效期")
+	private Integer repairValidity;
 	/**创建人员*/
 	@Excel(name = "创建人员", width = 15)
     @ApiModelProperty(value = "创建人员")
