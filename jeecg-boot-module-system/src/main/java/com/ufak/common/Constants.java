@@ -14,8 +14,17 @@ public class Constants {
     /**微信支付APII密钥*/
     public static final String API_KEY = "12a0bbhua0b0f4e1fpicf84d351cfang";
 
+    /**微信统一下单接口地址*/
+    public static final String UNIFIEDORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+
+    /**微信退款接口地址*/
+    public static final String REFUND_URL = " https://api.mch.weixin.qq.com/secapi/pay/refund";
+
     /**支付回调通知地址*/
     public static final String NOTIFY_URL = "https://youfuankang.com/jeecg-boot/pay/call/back/wxPay/url";
+
+    /**退款回调通知地址*/
+    public static final String TK_NOTIFY_URL = "https://youfuankang.com/jeecg-boot/refund/call/back/wxRefund/url";
 
     /**返回微信支付通知成功状态码*/
     public static final String resSuccessXml = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
