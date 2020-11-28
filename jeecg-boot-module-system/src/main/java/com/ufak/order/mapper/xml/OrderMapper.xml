@@ -3,7 +3,7 @@
 <mapper namespace="com.ufak.order.mapper.OrderMapper">
 
     <select id="queryAppPageList" parameterType="map" resultType="com.ufak.order.entity.Order">
-        SELECT id,create_time,order_status,(total_amount + freight_amount + event_amount + coupon_amount) as pay_amount FROM t_order
+        SELECT id,create_time,order_status, payment_amount FROM t_order
         <include refid="where"/>
         ORDER BY create_time desc
         limit #{start},#{size}
