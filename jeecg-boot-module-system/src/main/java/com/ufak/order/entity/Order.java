@@ -119,9 +119,9 @@ public class Order {
     @ApiModelProperty(value = "修改时间")
 	private java.util.Date updateTime;
 
-	/**实付金额*/
-	@TableField(exist = false)
-	private java.math.BigDecimal payAmount;
+//	/**实付金额*/
+//	@TableField(exist = false)
+//	private java.math.BigDecimal payAmount;
 	/**订单明细*/
 	@TableField(exist = false)
 	private List<OrderDetail> orderDetails;
