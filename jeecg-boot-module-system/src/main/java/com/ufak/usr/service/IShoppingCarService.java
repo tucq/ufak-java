@@ -24,4 +24,14 @@ public interface IShoppingCarService extends IService<ShoppingCar> {
      */
     List<ShoppingCar> getPayforList(String userId);
 
+    /**
+     * 查询购物车
+     * @param userId
+     * @param productId
+     * @param specs1Id
+     * @param specs2Id
+     * @return
+     */
+    ShoppingCar queryOne(String userId,String productId,String specs1Id,String specs2Id);
+
 }

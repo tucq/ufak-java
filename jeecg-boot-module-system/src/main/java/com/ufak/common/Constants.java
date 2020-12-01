@@ -64,6 +64,19 @@ public class Constants {
     public static final String WAIT_RECEIVE = "2";//待收货
     public static final String CANCELLED = "3";//已取消
     public static final String COMPLETED = "4";//已完成
+    public static final String REFUND = "5";//已退款
+
+    /**售后服务类型*/
+    public static final String AFTER_SALE_REFUND = "0";//退款
+    public static final String AFTER_SALE_RETURN = "1";//退货
+    public static final String AFTER_SALE_EXCHANGE = "2";//换货
+    public static final String AFTER_SALE_REPAIR = "3";//维修
+    public static final String AFTER_SALE_INVOICE = "4";//开票
+
+    /**售后服务类型*/
+    public static final String STATUS_APPLY = "0";//提交申请
+    public static final String STATUS_PROCESS = "1";//处理中
+    public static final String STATUS_COMPLETE = "2";//完成
 
 
 

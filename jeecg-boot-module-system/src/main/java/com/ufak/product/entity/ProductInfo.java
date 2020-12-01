@@ -82,6 +82,10 @@ public class ProductInfo  implements Serializable {
 	@Excel(name = "推荐理由", width = 15)
 	@ApiModelProperty(value = "推荐理由")
 	private String keyPoint;
+	/**退货有效期*/
+	@Excel(name = "退货有效期", width = 15)
+	@ApiModelProperty(value = "退货有效期")
+	private Integer refundValidity;
 	/**换货有效期*/
 	@Excel(name = "换货有效期", width = 15)
 	@ApiModelProperty(value = "换货有效期")

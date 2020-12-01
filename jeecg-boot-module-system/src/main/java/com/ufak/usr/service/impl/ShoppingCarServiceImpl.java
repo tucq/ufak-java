@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.mapper.ShoppingCarMapper;
 import com.ufak.usr.service.IShoppingCarService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,5 +45,17 @@ public class ShoppingCarServiceImpl extends ServiceImpl<ShoppingCarMapper, Shopp
         qw.eq("user_id",userId);
         qw.eq("is_check","0");
         return this.list(qw);
+    }
+
+    @Override
+    public ShoppingCar queryOne(String userId, String productId, String specs1Id, String specs2Id) {
+        QueryWrapper<ShoppingCar> qw = new QueryWrapper<>();
+        qw.eq("user_id",userId);
+        qw.eq("product_id",productId);
+        qw.eq("specs1_id",specs1Id);
+        if(StringUtils.isNotBlank(specs2Id) && !"null".equals(specs2Id)){
+            qw.eq("specs2_id",specs2Id);
+        }
+        return this.getOne(qw);
     }
 }

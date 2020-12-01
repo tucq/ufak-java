@@ -106,6 +106,12 @@ public class Order {
 	@Excel(name = "微信支付回调业务结果", width = 15)
     @ApiModelProperty(value = "微信支付回调业务结果")
 	private java.lang.String resultCode;
+	/**物流到货时间*/
+	@Excel(name = "物流到货时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@ApiModelProperty(value = "物流到货时间")
+	private java.util.Date logisticsTime;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

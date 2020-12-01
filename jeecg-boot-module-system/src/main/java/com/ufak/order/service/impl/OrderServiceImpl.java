@@ -2,6 +2,7 @@ package com.ufak.order.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,7 +13,9 @@ import com.ufak.order.mapper.OrderMapper;
 import com.ufak.order.service.IOrderDetailService;
 import com.ufak.order.service.IOrderService;
 import com.ufak.order.service.IOrderUnpaidService;
+import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.entity.ProductPrice;
+import com.ufak.product.service.IProductInfoService;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.service.IShoppingCarService;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +54,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderMapper orderMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private IProductInfoService productInfoService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -155,5 +161,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         QueryWrapper qryUnpaid = new QueryWrapper<>();
         qryUnpaid.eq("order_id",orderId);
         orderUnpaidService.remove(qryUnpaid);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void buyAgain(String orderId) throws Exception {
+        Order order = this.getById(orderId);
+        List<OrderDetail> details = orderDetailService.queryByOrderId(orderId);
+        UpdateWrapper uw = new UpdateWrapper();
+        uw.set("is_check",Constants.NO);
+        uw.eq("user_id",order.getUserId());
+        shoppingCarService.update(uw);//取消其他购物车勾选项
+        for(OrderDetail detail : details){
+            //校验商品是否失效
+            ProductInfo productInfo = productInfoService.getById(detail.getProductId());
+            if(!"0".equals(productInfo.getState())){//商品已下架
+                throw new JeecgBootException("非常抱歉该商品已下架，请您凉解");
+            }
+            //检查购物车商品是否已存在
+            ShoppingCar sc = shoppingCarService.queryOne(order.getUserId(),detail.getProductId(),detail.getSpecs1Id(),detail.getSpecs2Id());
+            if(sc != null){
+                sc.setBuyNum(detail.getBuyNum());
+                sc.setIsCheck(Constants.YES);
+                shoppingCarService.updateById(sc);
+            }else{
+                ShoppingCar car = new ShoppingCar();
+                car.setUserId(order.getUserId());
+                car.setProductId(detail.getProductId());
+                car.setSpecs1Id(detail.getSpecs1Id());
+                car.setSpecs2Id(detail.getSpecs2Id());
+                car.setBuyNum(detail.getBuyNum());
+                car.setIsCheck(Constants.YES);
+                car.setCreateTime(new Date());
+                shoppingCarService.save(car);
+            }
+        }
+
     }
 }

@@ -43,4 +43,11 @@ public interface IOrderService extends IService<Order> {
      */
     void deleteOrder(String orderId) throws Exception;
 
+    /**
+     * 再次购买
+     * @param orderId
+     * @throws Exception
+     */
+    void buyAgain(String orderId) throws Exception;
+
 }

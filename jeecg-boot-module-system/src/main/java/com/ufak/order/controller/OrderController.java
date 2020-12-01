@@ -133,17 +133,64 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 		}
 	}
 
-	@PostMapping(value = "/test")
-	public Result<?> test(@RequestParam(name="orderId",required=true) String orderId) {
-//		redisUtil.set("OrderKey_"+orderId,orderId,10);
-//		redisUtil.set("OtherKey_"+orderId,orderId,10);
-		redisUtil.set("OrderKey_"+orderId,orderId,10);
-		redisUtil.set("OtherKey_"+orderId,orderId,10);
-		System.out.println("订单取消成功22");
-		return Result.ok("订单取消成功");
+
+	/**
+	 * 再次购买
+	 * @param orderId
+	 * @return
+	 */
+	@PostMapping(value = "/buy/again")
+	public Result<?> buyAgain(@RequestParam(name="orderId") String orderId) {
+		try {
+			orderService.buyAgain(orderId);
+			return Result.ok("操作成功");
+		}catch (JeecgBootException e){
+			return Result.error(e.getMessage());
+		}catch (Exception e) {
+			log.error("再次购买异常:{}",e);
+			return Result.error("再次购买异常，请联系客服！");
+		}
 	}
 
-	
+
+	/**
+	 * 确认收货
+	 * @param orderId
+	 * @return
+	 */
+	@PostMapping(value = "/confirm/receive")
+	public Result<?> confirmReceive(@RequestParam(name="orderId") String orderId) {
+		Order order = new Order();
+		order.setId(orderId);
+		order.setOrderStatus(Constants.COMPLETED);
+		orderService.updateById(order);
+		return Result.ok();
+	}
+
+
+	/**
+	 * 申请售后
+	 * @param orderDetail
+	 * @return
+	 */
+	@PostMapping(value = "/apply/afterSale")
+	public Result<?> afterSale(@RequestBody OrderDetail orderDetail) {
+		orderDetailService.save(orderDetail);
+		return Result.ok("添加成功！");
+	}
+
+	/**
+	 * 申请开票
+	 * @param orderDetail
+	 * @return
+	 */
+	@PostMapping(value = "/open/invoice")
+	public Result<?> add(@RequestBody OrderDetail orderDetail) {
+		//todo
+		orderDetailService.save(orderDetail);
+		return Result.ok("添加成功！");
+	}
+
 	/**
 	 * 添加
 	 *

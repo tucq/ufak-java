@@ -129,6 +129,7 @@ public class PayController {
                 order.setFreightAmount(freightAmount);
                 order.setEventAmount(eventAmount);
                 order.setCouponAmount(couponAmount);
+                order.setPaymentAmount(paymentAmount);
                 order.setOrderStatus(Constants.WAIT_PAY);
                 order.setUsername(username);
                 order.setTelephone(telephone);

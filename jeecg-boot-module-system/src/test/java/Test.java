@@ -1,5 +1,3 @@
-import org.jeecg.common.util.DateUtils;
-
 /**
  * Created by Administrator on 2020/11/4.
  */
@@ -12,16 +10,18 @@ public class Test {
 //
 //        System.out.println(Math.round((Math.random()+1) * 1000));
 
-        String productNames = "aaa/bb/cc///";
-        productNames = productNames.substring(0,productNames.lastIndexOf("/"));
-        System.out.println(productNames);
+//        String productNames = "aaa/bb/cc///";
+//        productNames = productNames.substring(0,productNames.lastIndexOf("/"));
+//        System.out.println(productNames);
+//
+//        long curr = System.currentTimeMillis();
+//        long expr2 = curr + 30 * 60 * 1000;
+//        long expr1 = curr + 90 * 1000;
+//        System.out.println(expr1);
+//        System.out.println(expr2);
+//        System.out.println(DateUtils.formatDate(DateUtils.getCalendar(curr),"yyyy-MM-dd HH:mm:ss"));
+//        System.out.println(DateUtils.formatDate(DateUtils.getCalendar(expr2),"yyyy-MM-dd HH:mm:ss"));
 
-        long curr = System.currentTimeMillis();
-        long expr2 = curr + 30 * 60 * 1000;
-        long expr1 = curr + 90 * 1000;
-        System.out.println(expr1);
-        System.out.println(expr2);
-        System.out.println(DateUtils.formatDate(DateUtils.getCalendar(curr),"yyyy-MM-dd HH:mm:ss"));
-        System.out.println(DateUtils.formatDate(DateUtils.getCalendar(expr2),"yyyy-MM-dd HH:mm:ss"));
+
     }
 }
