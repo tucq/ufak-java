@@ -13,9 +13,9 @@ public interface IAfterSaleRefundService extends IService<AfterSaleRefund> {
 
     /**
      * 退款申请
-     * @param orderDetailId
+     * @param orderId
      * @param afterSaleRefund
      */
-    void apply(String orderDetailId,AfterSaleRefund afterSaleRefund) throws Exception;
+    void apply(String orderId,AfterSaleRefund afterSaleRefund) throws Exception;
 
 }

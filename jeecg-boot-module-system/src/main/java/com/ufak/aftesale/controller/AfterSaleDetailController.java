@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.aftesale.entity.AfterSale;
 import com.ufak.aftesale.entity.AfterSaleDetail;
-import com.ufak.aftesale.entity.AfterSaleRefund;
 import com.ufak.aftesale.service.IAfterSaleDetailService;
+import com.ufak.aftesale.service.IAfterSaleService;
+import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.service.IOrderService;
 import com.ufak.product.entity.ProductInfo;
@@ -39,6 +41,8 @@ import java.util.*;
 @RestController
 @RequestMapping("/afterSaleDetail")
 public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, IAfterSaleDetailService> {
+    @Autowired
+    private IAfterSaleService afterSaleService;
     @Autowired
     private IAfterSaleDetailService afterSaleDetailService;
     @Autowired
@@ -96,23 +100,28 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      */
     @PostMapping(value = "/apply")
     public Result<?> apply(@RequestBody JSONObject jsonObject) {
-        String orderId = jsonObject.getString("orderId");
-        String orderDetailId = jsonObject.getString("orderDetailId");
-        AfterSaleDetail detail = new AfterSaleDetail();
-        detail.setOrd
-        refund.setRefundReason(jsonObject.getString("refundReason"));
-        refund.setRemark(jsonObject.getString("remark"));
-        refund.setRefundContact(jsonObject.getString("refundContact"));
-        refund.setRefundTelephone(jsonObject.getString("refundTelephone"));
         try {
-            afterSaleRefundService.apply(orderId, refund);
-            return Result.ok("申请退款成功");
+            String orderDetailId = jsonObject.getString("orderDetailId");
+            String serviceType = jsonObject.getString("serviceType");
+            QueryWrapper<AfterSale> qw = new QueryWrapper();
+            qw.eq("order_detail_id",orderDetailId);
+            qw.in("service_type",Constants.AFTER_SALE_RETURN,Constants.AFTER_SALE_EXCHANGE,Constants.AFTER_SALE_REPAIR);
+            qw.eq("status",Constants.STATUS_PROCESS);
+            List<AfterSale> list = afterSaleService.list(qw);
+            if(list.size() > 0){
+                AfterSale as = list.get(0);
+                if(Constants.STATUS_PROCESS.equals(as.getStatus())){
+                    return Result.error("该笔订单已申请售后，福安康将在24小时内会为您处理");
+                }
+            }
+            afterSaleDetailService.apply(jsonObject);
+            return Result.ok("申请售后成功");
         } catch (JeecgBootException e) {
-            log.error("申请退款异常：{}", e);
+            log.error("申请售后异常：{}", e);
             return Result.error(e.getMessage());
         } catch (Exception e) {
-            log.error("申请退款异常：{}", e);
-            return Result.error("申请退款异常,请联系客服");
+            log.error("申请售后异常：{}", e);
+            return Result.error("申请售后异常,请联系客服");
         }
     }
 

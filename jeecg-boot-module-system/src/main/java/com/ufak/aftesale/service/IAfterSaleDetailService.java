@@ -1,5 +1,6 @@
 package com.ufak.aftesale.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ufak.aftesale.entity.AfterSaleDetail;
 
@@ -10,5 +11,9 @@ import com.ufak.aftesale.entity.AfterSaleDetail;
  * @Version: V1.0
  */
 public interface IAfterSaleDetailService extends IService<AfterSaleDetail> {
-
+    /**
+     * 退款/售后申请
+     * @param jsonObject
+     */
+    void apply(JSONObject jsonObject) throws Exception;
 }

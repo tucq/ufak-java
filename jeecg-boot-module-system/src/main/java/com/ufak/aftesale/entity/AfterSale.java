@@ -33,14 +33,18 @@ public class AfterSale {
 	@Excel(name = "用户id", width = 15)
     @ApiModelProperty(value = "用户id")
 	private java.lang.String userId;
-//	/**订单id*/
-//	@Excel(name = "订单id", width = 15)
-//    @ApiModelProperty(value = "订单id")
-//	private java.lang.String orderId;
+	/**订单id*/
+	@Excel(name = "订单id", width = 15)
+    @ApiModelProperty(value = "订单id")
+	private java.lang.String orderId;
 	/**订单明细id*/
 	@Excel(name = "订单明细id", width = 15)
 	@ApiModelProperty(value = "订单明细id")
 	private java.lang.String orderDetailId;
+	/**退款售后单号*/
+	@Excel(name = "退款售后单号", width = 15)
+	@ApiModelProperty(value = "退款售后单号")
+	private java.lang.String afterSaleNo;
 	/**服务类型0：退款，1：退货，2：换货，3：维修，4：开票*/
 	@Excel(name = "服务类型0：退款，1：退货，2：换货，3：维修，4：开票", width = 15)
     @ApiModelProperty(value = "服务类型0：退款，1：退货，2：换货，3：维修，4：开票")
@@ -49,6 +53,22 @@ public class AfterSale {
 	@Excel(name = "状态 0：提交申请，1：处理中，2：完成，3-取消", width = 15)
     @ApiModelProperty(value = "状态 0：提交申请，1：处理中，2：完成，3-取消")
 	private java.lang.String status;
+	/**微信支付订单号*/
+	@Excel(name = "微信支付订单号", width = 15)
+	@ApiModelProperty(value = "微信支付订单号")
+	private java.lang.String transactionId;
+	/**微信订单金额(分)*/
+	@Excel(name = "微信订单金额(分)", width = 15)
+	@ApiModelProperty(value = "微信订单金额(分)")
+	private java.lang.Integer totalFee;
+	/**退款金额(分)*/
+	@Excel(name = "退款金额(分)", width = 15)
+	@ApiModelProperty(value = "退款金额(分)")
+	private java.lang.Integer refundFee;
+	/**退款原因*/
+	@Excel(name = "退款原因", width = 15)
+	@ApiModelProperty(value = "退款原因")
+	private java.lang.String refundDesc;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")

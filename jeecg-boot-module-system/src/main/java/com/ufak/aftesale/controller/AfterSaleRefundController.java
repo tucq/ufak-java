@@ -43,14 +43,14 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 */
 	 @PostMapping(value = "/apply")
 	 public Result<?> apply(@RequestBody JSONObject jsonObject) {
-	 	 String orderDetailId = jsonObject.getString("orderDetailId");
+	 	 String orderId = jsonObject.getString("orderId");
 		 AfterSaleRefund refund = new AfterSaleRefund();
 		 refund.setRefundReason(jsonObject.getString("refundReason"));
 		 refund.setRemark(jsonObject.getString("remark"));
 		 refund.setRefundContact(jsonObject.getString("refundContact"));
 		 refund.setRefundTelephone(jsonObject.getString("refundTelephone"));
 		 try {
-			 afterSaleRefundService.apply(orderDetailId,refund);
+			 afterSaleRefundService.apply(orderId,refund);
 			 return Result.ok("申请退款成功");
 		 } catch (JeecgBootException e){
 			 log.error("申请退款异常：{}",e);

@@ -74,9 +74,9 @@ public class Constants {
     public static final String AFTER_SALE_INVOICE = "4";//开票
 
     /**售后服务类型*/
-    public static final String STATUS_APPLY = "0";//提交申请
-    public static final String STATUS_PROCESS = "1";//处理中
-    public static final String STATUS_COMPLETE = "2";//完成
+    public static final String STATUS_PROCESS = "0";//处理中
+    public static final String STATUS_COMPLETE = "1";//完成
+    public static final String STATUS_CANCEL = "2";//取消
 
 
 

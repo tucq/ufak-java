@@ -14,6 +14,9 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @Description: 退款明细
  * @Author: jeecg-boot
@@ -29,20 +32,35 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
     private IAfterSaleService afterSaleService;
 
     @Override
-    public void apply(String orderDetailId, AfterSaleRefund afterSaleRefund) throws Exception {
+    public void apply(String orderId, AfterSaleRefund afterSaleRefund) throws Exception {
         QueryWrapper<AfterSale> qw = new QueryWrapper();
-        qw.eq("order_detail_id",orderDetailId);
-        qw.eq("status",Constants.AFTER_SALE_REFUND);
+        qw.eq("order_id",orderId);
+        qw.eq("status",Constants.STATUS_PROCESS);
         int i = afterSaleService.count(qw);
         if(i > 0){
-            throw new JeecgBootException("该笔订单已申请退款，请误重复提交");
+            throw new JeecgBootException("该笔订单已申请过退款，福安康将在24小时内会为您处理");
         }
+        QueryWrapper<AfterSale> qw2 = new QueryWrapper();
+        qw2.eq("order_id",orderId);
+        qw2.eq("status",Constants.STATUS_COMPLETE);
+        int ii = afterSaleService.count(qw2);
+        if(ii > 0){
+            throw new JeecgBootException("该笔订单已退款成功，详情请查看[退款/售后]");
+        }
+
         Order order = orderService.getById(orderId);
         AfterSale afterSale = new AfterSale();
         afterSale.setOrderId(orderId);
         afterSale.setUserId(order.getUserId());
         afterSale.setServiceType(Constants.AFTER_SALE_REFUND);
-        afterSale.setStatus(Constants.STATUS_APPLY);
+        afterSale.setStatus(Constants.STATUS_PROCESS);
+        afterSale.setTransactionId(order.getTransactionId());
+        afterSale.setTotalFee(order.getTotalFee());//微信订单金额(分)
+        afterSale.setRefundFee(order.getCashFee());//退款金额
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String afterSaleNo = "TK"+sdf.format(new Date()) + String.valueOf(Math.round((Math.random()+1) * 1000));//订单号
+        afterSale.setAfterSaleNo(afterSaleNo);
+        afterSale.setRefundDesc(afterSaleRefund.getRefundReason());
         afterSaleService.save(afterSale);
 
         afterSaleRefund.setAfterSaleId(afterSale.getId());
