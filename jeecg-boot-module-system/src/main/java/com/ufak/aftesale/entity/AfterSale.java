@@ -1,9 +1,11 @@
 package com.ufak.aftesale.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ufak.order.entity.OrderDetail;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +13,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Description: 退款/售后
@@ -81,4 +86,15 @@ public class AfterSale {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "修改时间")
 	private java.util.Date updateTime;
+
+	/**订单明细*/
+	@TableField(exist = false)
+	private List<OrderDetail> orderDetails;
+
+	public List<OrderDetail> getOrderDetails() {
+		if(orderDetails == null){
+			orderDetails = new ArrayList<>();
+		}
+		return orderDetails;
+	}
 }

@@ -1,17 +1,15 @@
 package com.ufak.aftesale.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.aftesale.entity.AfterSale;
 import com.ufak.aftesale.service.IAfterSaleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,8 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
- /**
+/**
  * @Description: 退款/售后
  * @Author: jeecg-boot
  * @Date:   2020-11-28
@@ -50,9 +50,14 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<AfterSale> queryWrapper = QueryGenerator.initQueryWrapper(afterSale, req.getParameterMap());
-		Page<AfterSale> page = new Page<AfterSale>(pageNo, pageSize);
-		IPage<AfterSale> pageList = afterSaleService.page(page, queryWrapper);
+		String userId = req.getParameter("userId");
+		String status = req.getParameter("status");
+		Map paramMap = new HashMap<>();
+		paramMap.put("userId",userId);
+		if(StringUtils.isNotBlank(status) && !"null".equals(status)){
+			paramMap.put("status",status);
+		}
+		IPage<AfterSale> pageList = afterSaleService.queryPageList(pageNo,pageSize,paramMap);
 		return Result.ok(pageList);
 	}
 	
