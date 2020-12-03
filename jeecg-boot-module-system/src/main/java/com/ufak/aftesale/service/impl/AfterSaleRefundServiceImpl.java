@@ -35,6 +35,7 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
     public void apply(String orderId, AfterSaleRefund afterSaleRefund) throws Exception {
         QueryWrapper<AfterSale> qw = new QueryWrapper();
         qw.eq("order_id",orderId);
+        qw.eq("service_type",Constants.AFTER_SALE_REFUND);
         qw.eq("status",Constants.STATUS_PROCESS);
         int i = afterSaleService.count(qw);
         if(i > 0){
@@ -42,6 +43,7 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
         }
         QueryWrapper<AfterSale> qw2 = new QueryWrapper();
         qw2.eq("order_id",orderId);
+        qw2.eq("service_type",Constants.AFTER_SALE_REFUND);
         qw2.eq("status",Constants.STATUS_COMPLETE);
         int ii = afterSaleService.count(qw2);
         if(ii > 0){

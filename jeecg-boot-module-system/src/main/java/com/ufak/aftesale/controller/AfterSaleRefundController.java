@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.aftesale.entity.AfterSale;
 import com.ufak.aftesale.entity.AfterSaleRefund;
 import com.ufak.aftesale.service.IAfterSaleRefundService;
+import com.ufak.aftesale.service.IAfterSaleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Description: 退款明细
@@ -35,6 +39,8 @@ import java.util.Arrays;
 public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, IAfterSaleRefundService> {
 	@Autowired
 	private IAfterSaleRefundService afterSaleRefundService;
+	@Autowired
+	private IAfterSaleService afterSaleService;
 
 	/**
 	 * 申请退款
@@ -60,6 +66,26 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 			 return Result.error("申请退款异常,请联系客服");
 		 }
 	 }
+
+
+	/**
+	 * 查看详情
+	 * @param id
+	 * @return
+	 */
+	@GetMapping(value = "/view")
+	public Result<?> view(@RequestParam(name="id",required=true) String id) {
+		Map<String,Object> resultMap = new HashMap<>();
+		AfterSale afterSale = afterSaleService.getById(id);
+		QueryWrapper<AfterSaleRefund> qw = new QueryWrapper<>();
+		qw.eq("after_sale_id",id);
+		AfterSaleRefund afterSaleRefund = afterSaleRefundService.getOne(qw);
+		resultMap.put("afterSale",afterSale);
+		resultMap.put("afterSaleRefund",afterSaleRefund);
+		return Result.ok(resultMap);
+	}
+
+
 
 	/**
 	 * 分页列表查询

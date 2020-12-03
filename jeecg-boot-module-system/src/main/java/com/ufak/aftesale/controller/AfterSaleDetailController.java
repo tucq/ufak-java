@@ -94,7 +94,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
 
 
     /**
-     * 售后申请
      * @param jsonObject
      * @return
      */
@@ -123,6 +122,23 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
             log.error("申请售后异常：{}", e);
             return Result.error("申请售后异常,请联系客服");
         }
+    }
+
+    /**
+     * 查看详情
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/view")
+    public Result<?> view(@RequestParam(name="id",required=true) String id) {
+        Map<String,Object> resultMap = new HashMap<>();
+        AfterSale afterSale = afterSaleService.getById(id);
+        QueryWrapper<AfterSaleDetail> qw = new QueryWrapper<>();
+        qw.eq("after_sale_id",id);
+        AfterSaleDetail afterSaleDetail = afterSaleDetailService.getOne(qw);
+        resultMap.put("afterSale",afterSale);
+        resultMap.put("afterSaleDetail",afterSaleDetail);
+        return Result.ok(resultMap);
     }
 
 

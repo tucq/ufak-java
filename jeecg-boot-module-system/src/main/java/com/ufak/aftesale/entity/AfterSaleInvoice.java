@@ -1,6 +1,7 @@
 package com.ufak.aftesale.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -65,6 +66,9 @@ public class AfterSaleInvoice {
 	@Excel(name = "开户行帐号", width = 15)
     @ApiModelProperty(value = "开户行帐号")
 	private java.lang.String bankAccount;
+	private java.lang.String username;
+	private java.lang.String telephone;
+
 	/**电子发票地址*/
 	@Excel(name = "电子发票地址", width = 15)
     @ApiModelProperty(value = "电子发票地址")
@@ -75,4 +79,10 @@ public class AfterSaleInvoice {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
 	private java.util.Date createTime;
+
+	/**
+	 * 订单id
+	 */
+	@TableField(exist = false)
+	private String orderId;
 }

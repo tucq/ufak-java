@@ -3,13 +3,17 @@ package com.ufak.aftesale.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ufak.aftesale.entity.AfterSale;
 import com.ufak.aftesale.entity.AfterSaleInvoice;
 import com.ufak.aftesale.service.IAfterSaleInvoiceService;
+import com.ufak.aftesale.service.IAfterSaleService;
+import com.ufak.common.Constants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +23,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
- /**
+/**
  * @Description: 售后开票明细
  * @Author: jeecg-boot
  * @Date:   2020-11-28
@@ -32,8 +38,69 @@ import java.util.Arrays;
 @RequestMapping("/afterSaleInvoice")
 public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice, IAfterSaleInvoiceService> {
 	@Autowired
+	private IAfterSaleService afterSaleService;
+	@Autowired
 	private IAfterSaleInvoiceService afterSaleInvoiceService;
-	
+
+
+	/**
+	 * 校验是否已开过票
+	 *
+	 * @param orderId
+	 * @return
+	 */
+	@RequestMapping(value = "/check")
+	public Result<?> checkExpire(@RequestParam String orderId) {
+		QueryWrapper<AfterSale> qw = new QueryWrapper();
+		qw.eq("order_id",orderId);
+		qw.eq("service_type",Constants.AFTER_SALE_INVOICE);
+		qw.ne("status", Constants.STATUS_CANCEL);
+		int i = afterSaleService.count(qw);
+		if(i > 0){
+			return Result.error("该笔订单已申请过开票");
+		}
+		return Result.ok();
+	}
+
+
+	/**
+	 * 开票申请
+	 * @param afterSaleInvoice
+	 * @return
+	 */
+	@PostMapping(value = "/apply")
+	public Result<?> apply(@RequestBody AfterSaleInvoice afterSaleInvoice) {
+		try {
+			afterSaleInvoiceService.apply(afterSaleInvoice);
+			return Result.ok("开票申请成功");
+		} catch (JeecgBootException e) {
+			log.error("开票申请异常：{}", e);
+			return Result.error(e.getMessage());
+		} catch (Exception e) {
+			log.error("开票申请异常：{}", e);
+			return Result.error("开票申请异常,请联系客服");
+		}
+	}
+
+
+	/**
+	 * 查看详情
+	 * @param id
+	 * @return
+	 */
+	@GetMapping(value = "/view")
+	public Result<?> view(@RequestParam(name="id",required=true) String id) {
+		Map<String,Object> resultMap = new HashMap<>();
+		AfterSale afterSale = afterSaleService.getById(id);
+		QueryWrapper<AfterSaleInvoice> qw = new QueryWrapper<>();
+		qw.eq("after_sale_id",id);
+		AfterSaleInvoice afterSaleInvoice = afterSaleInvoiceService.getOne(qw);
+		resultMap.put("afterSale",afterSale);
+		resultMap.put("afterSaleInvoice",afterSaleInvoice);
+
+		return Result.ok(resultMap);
+	}
+
 	/**
 	 * 分页列表查询
 	 *

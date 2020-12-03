@@ -11,4 +11,10 @@ import com.ufak.aftesale.entity.AfterSaleInvoice;
  */
 public interface IAfterSaleInvoiceService extends IService<AfterSaleInvoice> {
 
+    /**
+     * 开票申请
+     * @param afterSaleInvoice
+     */
+    void apply(AfterSaleInvoice afterSaleInvoice) throws Exception;
+
 }
