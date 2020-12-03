@@ -17,7 +17,6 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,9 +43,7 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	private IOrderService orderService;
 	@Autowired
 	private IOrderDetailService orderDetailService;
-	@Autowired
-	private RedisUtil redisUtil;
-	
+
 	/**
 	 * 分页列表查询
 	 *
