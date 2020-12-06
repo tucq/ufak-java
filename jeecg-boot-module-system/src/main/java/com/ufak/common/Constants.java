@@ -18,7 +18,7 @@ public class Constants {
     public static final String UNIFIEDORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
     /**微信退款接口地址*/
-    public static final String REFUND_URL = " https://api.mch.weixin.qq.com/secapi/pay/refund";
+    public static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
     /**支付回调通知地址*/
     public static final String NOTIFY_URL = "https://youfuankang.com/jeecg-boot/pay/call/back/wxPay/url";
@@ -32,7 +32,11 @@ public class Constants {
     /**返回微信支付通知失败状态码*/
     public static final String resFailXml = "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[ERROR]]></return_msg></xml>";
 
+    /**RedisKey订单号前缀*/
     public static final String ORDER_KEY_PREFIX = "OrderKey_";
+
+    /**顺丰快递*/
+    public static final String SHUN_FENG = "0100352395";
 
     //是否标识：0-是，1-否
     public static final String YES = "0";
