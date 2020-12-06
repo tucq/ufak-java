@@ -137,6 +137,8 @@ jeecg :
     upload: /opt/jeecg-boot/upload
     #webapp文件路径
     webapp: /opt/jeecg-boot/webapp
+    #API证书
+    sslcertPath: /data/projects/ufak/zhengshu/83d84821eb595adec70dfc46bb0b4bd8.p12
   #短信秘钥
   sms:
      accessKeyId: LTAIpW4gUG7xYDNI

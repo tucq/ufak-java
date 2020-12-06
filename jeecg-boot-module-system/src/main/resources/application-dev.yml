@@ -140,6 +140,8 @@ jeecg :
     upload: E://upFiles
     #webapp文件路径
     webapp: E://webapp
+    #API证书
+    sslcertPath: D://work//ufak//p12//apiclient_cert.p12
   #短信秘钥
   sms:
      accessKeyId: ??
