@@ -1,11 +1,22 @@
 package com.ufak.wx.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ufak.aftesale.entity.AfterSale;
+import com.ufak.aftesale.service.IAfterSaleService;
 import com.ufak.common.ClientCustomSSL;
 import com.ufak.common.Constants;
 import com.ufak.common.PayCommonUtil;
+import com.ufak.order.entity.Order;
+import com.ufak.order.entity.OrderDetail;
+import com.ufak.order.service.IOrderDetailService;
+import com.ufak.order.service.IOrderService;
+import com.ufak.product.service.IProductPriceService;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom.JDOMException;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.encryption.AesEncryptUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,6 +28,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,6 +41,15 @@ import java.util.TreeMap;
 @RestController
 @RequestMapping("/refund")
 public class RefundController {
+    @Autowired
+    private IAfterSaleService afterSaleService;
+    @Autowired
+    private IOrderService orderService;
+    @Autowired
+    private IOrderDetailService orderDetailService;
+    @Autowired
+    private IProductPriceService productPriceService;
+
 
     private String randomString = PayCommonUtil.getRandomString(32);
 
@@ -43,6 +64,34 @@ public class RefundController {
         String outRefundNo = request.getParameter("afterSaleNo");//退款售后单号
         String totalFee = request.getParameter("totalFee");
         String refundFee = request.getParameter("refundFee");
+
+        //退款校验
+        QueryWrapper<Order> qryOrder = new QueryWrapper<>();
+        qryOrder.eq("transaction_id",transactionId);
+        Order order = orderService.getOne(qryOrder);
+        if(order == null){
+            return Result.error("微信交易单号不存在，请联系客服人员");
+        }
+        if(order.getTotalFee() != Integer.valueOf(totalFee)){
+            return Result.error("申请退款订单金额与下单支付订单金额不一致，请检查数据是否被篡改！");
+        }
+        if(order.getCashFee() != Integer.valueOf(refundFee)){
+            return Result.error("申请退款金额与下单支付现金金额不一致，请检查数据是否被篡改！");
+        }
+
+        // 返回库存， TODO 库存处理后期考虑 MQ
+        List<OrderDetail> orderDetails = orderDetailService.queryByOrderId(order.getId());
+        try{
+            for(OrderDetail detail: orderDetails){
+                productPriceService.returnStock(detail.getProductId(), detail.getSpecs1Id(), detail.getSpecs2Id(), detail.getBuyNum());
+            }
+        }catch (JeecgBootException e){
+            log.error("系统繁忙，请稍后处理",e);
+            return Result.error("系统繁忙，请稍后处理");
+        }catch (Exception e){
+            log.error("申请退款异常",e);
+            return Result.error("申请退款异常，请联系技术人员");
+        }
 
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
         parameterMap.put("appid", Constants.WX_APPID);  //应用appid
@@ -61,14 +110,12 @@ public class RefundController {
             Map<String, String> map = PayCommonUtil.doXMLParse(result);
             if("SUCCESS".equals(map.get("return_code"))) { //返回状态码
                 if ("SUCCESS".equals(map.get("result_code"))) {
-                    // TODO 退款成功后，业务操作
-                    System.out.println("微信支付订单号: " + map.get("transaction_id"));
-                    System.out.println("商户订单号: " + map.get("out_trade_no"));
-                    System.out.println("商户退款单号: " + map.get("out_refund_no"));
-                    System.out.println("微信退款单号: " + map.get("refund_id"));
-                    System.out.println("退款金额: " + map.get("refund_fee"));
-                    System.out.println("标价金额: " + map.get("total_fee"));
-                    System.out.println("现金支付金额: " + map.get("cash_fee"));
+                    // 更新库存
+                    String afterSaleNo = map.get("out_refund_no");//商户退款单号
+                    String refund_fee = map.get("refund_fee");//退款金额
+                    // TODO 扣除客户积分
+                    log.info("商户退款单号: " + afterSaleNo);
+                    log.info("退款金额: " + refund_fee);
                     return Result.ok();
                 }else{
                     log.error("退款失败：退款单号="+outRefundNo+", 原因："+map.get("err_code_des"));
@@ -118,34 +165,27 @@ public class RefundController {
                 inStream.close();
             }
 
-            if("SUCCESS".equals(params.get("return_code"))){ //微信支付通知返回状态码 （此字段是通信标识，非交易标识，交易是否成功需要查看result_code来判断）
-                if("SUCCESS".equals(params.get("result_code"))){ //业务结果
-                    if (PayCommonUtil.isTenpaySign(params)) {
-                        //微信支付签名验证成功
-                        resXml = Constants.resSuccessXml;
+            if("SUCCESS".equals(params.get("return_code"))){
+                //微信支付签名验证成功
+                resXml = Constants.resSuccessXml;
+                String req_info = params.get("req_info");//返回的加密信息
+                String xmlReqInfo = AesEncryptUtil.descrypt(req_info,Constants.API_KEY);//做AES-256-ECB解密（PKCS7Padding）
+                Map<String, String> reqInfoMap = PayCommonUtil.doXMLParse(xmlReqInfo);
+                String out_refund_no = reqInfoMap.get("out_refund_no");//退款单号
 
-                        String appid = params.get("appid");
-                        String mch_id = params.get("mch_id");
-                        String nonce_str = params.get("nonce_str");
-                        String req_info = params.get("req_info");
-
-                        System.out.println("==========》》》"+appid);
-                        System.out.println("==========》》》"+mch_id);
-                        System.out.println("==========》》》"+nonce_str);
-                        System.out.println("==========》》》"+req_info);
-
-                    }else{
-                        log.error("wxNotify:微信退款签名验证失败：" + params.get("err_code_des"));
-                        resXml = Constants.resFailXml;
-                    }
-                }else{
-                    log.error("wxNotify:退款回调失败（业务结果result_code失败）,错误信息：" + params.get("err_code_des"));
-                    resXml = Constants.resFailXml;
+                QueryWrapper<AfterSale> query = new QueryWrapper<>();
+                query.eq("after_sale_no",out_refund_no);
+                AfterSale afterSale = afterSaleService.getOne(query);
+                if(afterSale != null){
+                    afterSale.setStatus(Constants.STATUS_COMPLETE);// 更新退款单状态
+                    afterSaleService.updateById(afterSale);
                 }
+
             }else{
                 log.error("wxNotify:微信退款通信失败：" + params.get("return_msg"));
                 resXml = Constants.resFailXml;
             }
+
         }catch (Exception e){
             log.error("wxNotify:微信退款回调业务处理异常：{}", e);
         }finally {
