@@ -77,7 +77,10 @@ public interface CommonConstant {
     public static final String PREFIX_USER_TOKEN  = "prefix_user_token_";
     /** Token缓存时间：3600秒即一小时 */
     public static final int  TOKEN_EXPIRE_TIME  = 3600;
-    
+
+    /**微信小程序用户过期时间120天*/
+    public static final long WX_CLIENT_EXPIRE_TIME = 120 * 24 * 60 * 60;
+
 
     /**
      *  0：一级菜单
