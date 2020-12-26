@@ -18,4 +18,9 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     long totalCount(Map paramMap);
 
+
+    List<Order> queryBackPageList(Map paramMap);
+
+    long totalBackCount(Map paramMap);
+
 }

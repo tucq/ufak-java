@@ -2,7 +2,6 @@ package com.ufak.order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
@@ -16,7 +15,6 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,9 +58,20 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<Order> queryWrapper = QueryGenerator.initQueryWrapper(order, req.getParameterMap());
-		Page<Order> page = new Page<Order>(pageNo, pageSize);
-		IPage<Order> pageList = orderService.page(page, queryWrapper);
+		String orderNo = req.getParameter("orderNo");
+		String orderStatus = req.getParameter("orderStatus");
+		String telephone = req.getParameter("telephone");
+		Map paramMap = new HashMap<>();
+		if(StringUtils.isNotBlank(orderNo)){
+			paramMap.put("orderNo",orderNo);
+		}
+		if(StringUtils.isNotBlank(orderStatus)){
+			paramMap.put("orderStatus",orderStatus);
+		}
+		if(StringUtils.isNotBlank(telephone)){
+			paramMap.put("telephone",telephone);
+		}
+		IPage<Order> pageList = orderService.queryPageList(pageNo,pageSize,paramMap);
 		return Result.ok(pageList);
 	}
 

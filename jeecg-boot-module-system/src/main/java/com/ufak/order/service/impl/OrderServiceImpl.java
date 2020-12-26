@@ -118,6 +118,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderDetail;
     }
 
+
+    @Override
+    public IPage<Order> queryPageList(Integer pageNo, Integer pageSize, Map paramMap) {
+        int start = (pageNo - 1) * pageSize;
+        paramMap.put("start",start);
+        paramMap.put("size",pageSize);
+        List<Order> list = orderMapper.queryBackPageList(paramMap);
+        long totalCount = orderMapper.totalBackCount(paramMap);
+        Page page = new Page(pageNo, pageSize);
+        page.setRecords(list);
+        page.setTotal(totalCount);
+        return page;
+    }
+
     @Override
     public IPage<Order> queryAppPageList(Integer pageNo, Integer pageSize, Map paramMap) {
         int start = (pageNo - 1) * pageSize;

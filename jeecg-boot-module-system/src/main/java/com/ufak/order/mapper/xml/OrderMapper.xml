@@ -29,4 +29,31 @@
         </where>
     </sql>
 
+
+    <select id="queryBackPageList" parameterType="map" resultType="com.ufak.order.entity.Order">
+        SELECT *,CONCAT(username,' ',telephone) as username_tel,CONCAT(address,'  ',detail_address) as user_address FROM t_order
+        <include refid="whereBack"/>
+        ORDER BY create_time desc
+        limit #{start},#{size}
+    </select>
+
+    <select id="totalBackCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_order
+        <include refid="whereBack"/>
+    </select>
+
+    <sql id="whereBack">
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                AND order_no = #{orderNo}
+            </if>
+            <if test="orderStatus != null and orderStatus != ''">
+                AND order_status = #{orderStatus}
+            </if>
+            <if test="telephone != null and telephone != ''">
+                AND telephone = #{telephone}
+            </if>
+        </where>
+    </sql>
+
 </mapper>

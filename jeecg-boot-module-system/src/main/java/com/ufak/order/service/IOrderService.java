@@ -21,6 +21,16 @@ public interface IOrderService extends IService<Order> {
      */
     void submitOrder(Order order,String payInfo) throws Exception;
 
+   /**
+    * 后端分页查找订单
+    * @param pageNo
+    * @param pageSize
+    * @param paramMap
+    * @return
+    */
+   IPage<Order> queryPageList(Integer pageNo, Integer pageSize, Map paramMap);
+
+
     /**
      * APP端分页查找订单
      * @param pageNo

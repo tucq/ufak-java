@@ -131,6 +131,12 @@ public class Order {
 	/**订单明细*/
 	@TableField(exist = false)
 	private List<OrderDetail> orderDetails;
+	/**收货人/电话*/
+	@TableField(exist = false)
+	private java.lang.String usernameTel;
+	/**收货地址/详情地址*/
+	@TableField(exist = false)
+	private java.lang.String userAddress;
 
 	public List<OrderDetail> getOrderDetails() {
 		if(orderDetails == null){
