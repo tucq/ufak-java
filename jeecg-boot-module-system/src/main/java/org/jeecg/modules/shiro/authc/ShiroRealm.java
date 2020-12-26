@@ -1,5 +1,6 @@
 package org.jeecg.modules.shiro.authc;
 
+import com.ufak.common.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -60,7 +61,7 @@ public class ShiroRealm extends AuthorizingRealm {
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        log.info("===============Shiro权限认证开始============ [ roles、permissions]==========");
+//        log.info("===============Shiro权限认证开始============ [ roles、permissions]==========");
 		String username = null;
 		if (principals != null) {
             LoginUser sysUser = (LoginUser) principals.getPrimaryPrincipal();
@@ -75,7 +76,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		// 设置用户拥有的权限集合，比如“sys:role:add,sys:user:add”
 		Set<String> permissionSet = sysUserService.getUserPermissionsSet(username);
 		info.addStringPermissions(permissionSet);
-        log.info("===============Shiro权限认证成功==============");
+//        log.info("===============Shiro权限认证成功==============");
 		return info;
 	}
 
@@ -122,7 +123,7 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new AuthenticationException("账号已被锁定,请联系管理员!");
         }
 		// 校验token是否超时失效 & 或者账号密码是否错误
-		if (!jwtTokenRefresh(token, username, loginUser.getPassword())) {
+		if (!jwtTokenRefresh(token, username, loginUser)) {
 			throw new AuthenticationException("Token失效，请重新登录!");
 		}
 
@@ -139,19 +140,24 @@ public class ShiroRealm extends AuthorizingRealm {
      *       用户过期时间 = Jwt有效时间 * 2。
 	 *
 	 * @param userName
-	 * @param passWord
+	 * @param loginUser
 	 * @return
 	 */
-	public boolean jwtTokenRefresh(String token, String userName, String passWord) {
+	public boolean jwtTokenRefresh(String token, String userName, LoginUser loginUser) {
 		String cacheToken = String.valueOf(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN + token));
 		if (oConvertUtils.isNotEmpty(cacheToken)) {
 			// 校验token有效性
-			if (!JwtUtil.verify(cacheToken, userName, passWord)) {
-				String newAuthorization = JwtUtil.sign(userName, passWord);
+			if (!JwtUtil.verify(cacheToken, userName, loginUser.getPassword())) {
+				String newAuthorization = JwtUtil.sign(userName, loginUser.getPassword());
 				// 设置超时时间
-				redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
-				redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME *2 / 1000);
-                log.info("——————————用户在线操作，更新token保证不掉线—————————jwtTokenRefresh——————— "+ token);
+				if(Constants.CLIENT_ORG_CODE.equals(loginUser.getOrgCode())){ // 微信小程序用户刷新时间为 120 天
+					redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
+					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, CommonConstant.WX_CLIENT_EXPIRE_TIME);
+				}else{ // 平台用户刷新时间为 1 小时
+					redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
+					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME *2 / 1000);
+				}
+//                log.info("——————————用户在线操作，更新token保证不掉线—————————jwtTokenRefresh——————— "+ token);
 			}
             //update-begin--Author:scott  Date:20191005  for：解决每次请求，都重写redis中 token缓存问题
 //			else {
