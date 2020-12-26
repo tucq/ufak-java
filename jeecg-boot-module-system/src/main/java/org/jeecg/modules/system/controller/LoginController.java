@@ -470,7 +470,6 @@ public class LoginController {
 		if (code == null || code.length() == 0) {
 			map.put("status", 0);
 			map.put("msg", "code 不能为空");
-			System.out.println("map1:" + map);
 			return map;
 		}
 		//小程序唯一标识   (在微信小程序管理后台获取)
@@ -568,8 +567,7 @@ public class LoginController {
 		String token = JwtUtil.sign(username, syspassword);
 		// 设置token缓存有效时间
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-//		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token,  7 * 24 * 60 * 60 * 1000);//修改客户登录授权时间 7天时间
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token,  CommonConstant.WX_CLIENT_EXPIRE_TIME);//120天
 		return token;
 	}
 
