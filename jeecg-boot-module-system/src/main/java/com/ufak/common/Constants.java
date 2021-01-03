@@ -69,6 +69,7 @@ public class Constants {
     public static final String CANCELLED = "3";//已取消
     public static final String COMPLETED = "4";//已完成
     public static final String REFUND = "5";//已退款
+    public static final String AFTER_SALES = "6";//售后处理中
 
     /**售后服务类型*/
     public static final String AFTER_SALE_REFUND = "0";//退款

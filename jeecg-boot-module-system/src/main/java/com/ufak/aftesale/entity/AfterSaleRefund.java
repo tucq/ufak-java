@@ -33,6 +33,10 @@ public class AfterSaleRefund {
 	@Excel(name = "售后表id", width = 15)
     @ApiModelProperty(value = "售后表id")
 	private java.lang.String afterSaleId;
+	/**微信退款单号*/
+	@Excel(name = "微信退款单号", width = 15)
+	@ApiModelProperty(value = "微信退款单号")
+	private java.lang.String refundId;
 	/**退款总金额*/
 	@Excel(name = "退款总金额", width = 15)
     @ApiModelProperty(value = "退款总金额")
@@ -57,10 +61,25 @@ public class AfterSaleRefund {
 	@Excel(name = "交易编号", width = 15)
     @ApiModelProperty(value = "交易编号")
 	private java.lang.String transactionId;
+	/**微信通知退款金额*/
+	@Excel(name = "微信通知退款金额", width = 15)
+	@ApiModelProperty(value = "微信通知退款金额")
+	private Integer refundFee;
+	/**微信退款状态*/
+	@Excel(name = "微信退款状态", width = 15)
+	@ApiModelProperty(value = "微信退款状态")
+	private java.lang.String refundStatus;
 	/**创建时间*/
 	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
 	private java.util.Date createTime;
+	/**更新时间*/
+	@Excel(name = "更新时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@ApiModelProperty(value = "更新时间")
+	private java.util.Date updateTime;
+
 }

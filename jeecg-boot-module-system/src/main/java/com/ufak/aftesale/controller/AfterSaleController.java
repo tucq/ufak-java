@@ -53,7 +53,9 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 		String userId = req.getParameter("userId");
 		String status = req.getParameter("status");
 		Map paramMap = new HashMap<>();
-		paramMap.put("userId",userId);
+		if(StringUtils.isNotBlank(userId) && !"null".equals(userId)){
+			paramMap.put("userId",userId);
+		}
 		if(StringUtils.isNotBlank(status) && !"null".equals(status)){
 			paramMap.put("status",status);
 		}

@@ -67,6 +67,25 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 		 }
 	 }
 
+	/**
+	 * 申请退款取消
+	 * @param afterSaleId
+	 * @return
+	 */
+	@PostMapping(value = "/cancel")
+	public Result<?> cancel(@RequestParam(name="afterSaleId",required=true) String afterSaleId) {
+		try {
+			afterSaleRefundService.cancel(afterSaleId);
+			return Result.ok("取消退款成功");
+		} catch (JeecgBootException e){
+			log.error("取消退款异常",e);
+			return Result.error(e.getMessage());
+		} catch (Exception e) {
+			log.error("取消退款异常",e);
+			return Result.error("取消退款异常,请联系客服");
+		}
+	}
+
 
 	/**
 	 * 查看详情

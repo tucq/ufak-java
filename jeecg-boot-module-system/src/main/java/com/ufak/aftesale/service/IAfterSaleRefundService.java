@@ -18,4 +18,11 @@ public interface IAfterSaleRefundService extends IService<AfterSaleRefund> {
      */
     void apply(String orderId,AfterSaleRefund afterSaleRefund) throws Exception;
 
+    /**
+     * 取水退款申请
+     * @param afterSaleId
+     * @throws Exception
+     */
+    void cancel(String afterSaleId) throws Exception;
+
 }

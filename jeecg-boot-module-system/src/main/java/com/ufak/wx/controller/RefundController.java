@@ -1,7 +1,10 @@
 package com.ufak.wx.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ufak.aftesale.entity.AfterSale;
+import com.ufak.aftesale.entity.AfterSaleRefund;
+import com.ufak.aftesale.service.IAfterSaleRefundService;
 import com.ufak.aftesale.service.IAfterSaleService;
 import com.ufak.common.ClientCustomSSL;
 import com.ufak.common.Constants;
@@ -43,6 +46,8 @@ import java.util.TreeMap;
 public class RefundController {
     @Autowired
     private IAfterSaleService afterSaleService;
+    @Autowired
+    private IAfterSaleRefundService afterSaleRefundService;
     @Autowired
     private IOrderService orderService;
     @Autowired
@@ -179,8 +184,19 @@ public class RefundController {
                 if(afterSale != null){
                     afterSale.setStatus(Constants.STATUS_COMPLETE);// 更新退款单状态
                     afterSaleService.updateById(afterSale);
-                }
 
+                    LambdaQueryWrapper<AfterSaleRefund> qryRefund = new LambdaQueryWrapper<>();
+                    qryRefund.eq(AfterSaleRefund::getAfterSaleId,afterSale.getId());
+                    AfterSaleRefund afterSaleRefund = afterSaleRefundService.getOne(qryRefund);
+                    afterSaleRefund.setRefundFee(Integer.valueOf(reqInfoMap.get("refund_fee")));
+                    afterSaleRefund.setRefundStatus(reqInfoMap.get("refund_status"));
+                    afterSaleRefundService.updateById(afterSaleRefund);// 更新明细
+
+                    Order order = new Order();
+                    order.setId(afterSale.getOrderId());
+                    order.setOrderStatus(Constants.REFUND);// 更新订单状态为已退款
+                    orderService.updateById(order);
+                }
             }else{
                 log.error("wxNotify:微信退款通信失败：" + params.get("return_msg"));
                 resXml = Constants.resFailXml;

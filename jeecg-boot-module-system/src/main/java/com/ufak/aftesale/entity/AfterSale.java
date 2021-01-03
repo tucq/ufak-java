@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ufak.common.Constants;
 import com.ufak.order.entity.OrderDetail;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,8 +56,8 @@ public class AfterSale {
     @ApiModelProperty(value = "服务类型0：退款，1：退货，2：换货，3：维修，4：开票")
 	private java.lang.String serviceType;
 	/**状态 0：提交申请，1：处理中，2：完成，3-取消*/
-	@Excel(name = "状态 0：提交申请，1：处理中，2：完成，3-取消", width = 15)
-    @ApiModelProperty(value = "状态 0：提交申请，1：处理中，2：完成，3-取消")
+	@Excel(name = "状态 0：处理中，1：完成，2：取消", width = 15)
+    @ApiModelProperty(value = "状态 0：处理中，1：完成，2：取消")
 	private java.lang.String status;
 	/**微信支付订单号*/
 	@Excel(name = "微信支付订单号", width = 15)
@@ -96,5 +97,39 @@ public class AfterSale {
 			orderDetails = new ArrayList<>();
 		}
 		return orderDetails;
+	}
+
+	@TableField(exist = false)
+	private java.lang.String serviceTypeText;
+
+	public String getServiceTypeText() {
+		if(Constants.AFTER_SALE_REFUND.equals(serviceType)){
+			return "退款";
+		}else if(Constants.AFTER_SALE_RETURN.equals(serviceType)){
+			return "退货";
+		}else if(Constants.AFTER_SALE_EXCHANGE.equals(serviceType)){
+			return "换货";
+		}else if(Constants.AFTER_SALE_REPAIR.equals(serviceType)){
+			return "维修";
+		}else if(Constants.AFTER_SALE_INVOICE.equals(serviceType)){
+			return "开票";
+		}else {
+			return "";
+		}
+	}
+
+	@TableField(exist = false)
+	private java.lang.String statusText;
+
+	public String getStatusText() {
+		if(Constants.STATUS_PROCESS.equals(status)){
+			return "处理中";
+		}else if(Constants.STATUS_COMPLETE.equals(status)){
+			return "已完成";
+		}else if(Constants.STATUS_CANCEL.equals(status)){
+			return "已取消";
+		}else {
+			return "";
+		}
 	}
 }

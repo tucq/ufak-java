@@ -13,6 +13,7 @@ import com.ufak.order.service.IOrderService;
 import org.jeecg.common.exception.JeecgBootException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,6 +33,7 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
     private IAfterSaleService afterSaleService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void apply(String orderId, AfterSaleRefund afterSaleRefund) throws Exception {
         QueryWrapper<AfterSale> qw = new QueryWrapper();
         qw.eq("order_id",orderId);
@@ -67,6 +69,28 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
 
         afterSaleRefund.setAfterSaleId(afterSale.getId());
         afterSaleRefund.setPaymentAmount(order.getPaymentAmount());
+        afterSaleRefund.setTransactionId(order.getTransactionId());
         this.save(afterSaleRefund);
+
+        //更新订单状态
+        order.setOrderStatus(Constants.AFTER_SALES);
+        orderService.updateById(order);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancel(String afterSaleId) throws Exception {
+        AfterSale afterSale = afterSaleService.getById(afterSaleId);
+        if(afterSale != null && Constants.STATUS_PROCESS.equals(afterSale.getStatus())){
+            afterSale.setStatus(Constants.STATUS_CANCEL);
+            this.afterSaleService.updateById(afterSale);
+
+            Order order = orderService.getById(afterSale.getOrderId());
+            order.setOrderStatus(Constants.WAIT_SEND);
+            orderService.updateById(order);
+        }else{
+            throw new JeecgBootException("该笔退款单号状态已变更，请刷新后重试");
+        }
     }
 }
