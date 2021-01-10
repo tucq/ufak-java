@@ -1,6 +1,7 @@
 package com.ufak.aftesale.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,11 +9,10 @@ import com.ufak.aftesale.entity.AfterSale;
 import com.ufak.aftesale.entity.AfterSaleRefund;
 import com.ufak.aftesale.service.IAfterSaleRefundService;
 import com.ufak.aftesale.service.IAfterSaleService;
+import com.ufak.common.Constants;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -115,8 +115,6 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-分页列表查询")
-	@ApiOperation(value="退款明细-分页列表查询", notes="退款明细-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(AfterSaleRefund afterSaleRefund,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -134,8 +132,6 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 * @param afterSaleRefund
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-添加")
-	@ApiOperation(value="退款明细-添加", notes="退款明细-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody AfterSaleRefund afterSaleRefund) {
 		afterSaleRefundService.save(afterSaleRefund);
@@ -148,8 +144,6 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 * @param afterSaleRefund
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-编辑")
-	@ApiOperation(value="退款明细-编辑", notes="退款明细-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody AfterSaleRefund afterSaleRefund) {
 		afterSaleRefundService.updateById(afterSaleRefund);
@@ -162,8 +156,6 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-通过id删除")
-	@ApiOperation(value="退款明细-通过id删除", notes="退款明细-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		afterSaleRefundService.removeById(id);
@@ -176,8 +168,6 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-批量删除")
-	@ApiOperation(value="退款明细-批量删除", notes="退款明细-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.afterSaleRefundService.removeByIds(Arrays.asList(ids.split(",")));
@@ -186,15 +176,24 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 
 	/**
 	 * 通过id查询
-	 *
-	 * @param id
+	 * @param afterSaleId
 	 * @return
 	 */
-	@AutoLog(value = "退款明细-通过id查询")
-	@ApiOperation(value="退款明细-通过id查询", notes="退款明细-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		AfterSaleRefund afterSaleRefund = afterSaleRefundService.getById(id);
+	public Result<?> queryById(@RequestParam(name="afterSaleId",required=true) String afterSaleId) {
+		AfterSale afterSale = afterSaleService.getById(afterSaleId);
+		LambdaQueryWrapper<AfterSaleRefund> qw = new LambdaQueryWrapper<>();
+		qw.eq(AfterSaleRefund::getAfterSaleId,afterSaleId);
+		AfterSaleRefund afterSaleRefund = afterSaleRefundService.getOne(qw);
+		afterSaleRefund.setAfterSaleNo(afterSale.getAfterSaleNo());
+		afterSaleRefund.setRefundFee(afterSale.getRefundFee());
+		if(Constants.STATUS_PROCESS.equals(afterSale.getStatus())){
+			afterSaleRefund.setStatusText("待处理");
+		}else if(Constants.STATUS_COMPLETE.equals(afterSale.getStatus())){
+			afterSaleRefund.setStatusText("已完成");
+		}else if(Constants.STATUS_CANCEL.equals(afterSale.getStatus())){
+			afterSaleRefund.setStatusText("客户取消");
+		}
 		return Result.ok(afterSaleRefund);
 	}
 

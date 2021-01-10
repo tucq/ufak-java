@@ -1,6 +1,7 @@
 package com.ufak.aftesale.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -81,5 +82,10 @@ public class AfterSaleRefund {
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "更新时间")
 	private java.util.Date updateTime;
+
+	@TableField(exist = false)
+	private java.lang.String afterSaleNo;
+	@TableField(exist = false)
+	private java.lang.String statusText;
 
 }

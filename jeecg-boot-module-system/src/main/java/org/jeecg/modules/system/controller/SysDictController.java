@@ -479,4 +479,20 @@ public class SysDictController {
 		}
 	}
 
+
+	/**
+	 * 获取字典值
+	 * @param dictCode
+	 * @return
+	 */
+	@RequestMapping(value = "/item/{dictCode}", method = RequestMethod.GET)
+	public Result<?> getSysDictItemByCode(@PathVariable String dictCode) {
+		LambdaQueryWrapper<SysDict> queryWrapper = new LambdaQueryWrapper();
+		queryWrapper.eq(SysDict::getDictCode,dictCode);
+		queryWrapper.eq(SysDict::getDelFlag,"0");
+		SysDict sysDict = sysDictService.getOne(queryWrapper);
+		List<SysDictItem> sysDictItemList = sysDictItemService.selectItemsByMainId(sysDict.getId());
+		return Result.ok(sysDictItemList);
+	}
+
 }

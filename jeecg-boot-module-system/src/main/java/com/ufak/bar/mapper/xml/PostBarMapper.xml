@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ufak.bar.mapper.PostBarMapper">
+    <select id="selectPage" parameterType="map" resultType="com.ufak.bar.entity.PostBar">
+        SELECT
+        a.*,
+        IFNULL(b.reply_num,0) as reply_num ,
+        IFNULL(c.fans_num,0) as fans_num
+        from t_post_bar a
+        LEFT JOIN (SELECT post_bar_id,count(1) as reply_num from t_reply_bar GROUP BY post_bar_id) b on a.id = b.post_bar_id
+        LEFT JOIN (SELECT post_bar_id,count(1) fans_num from t_user_bar GROUP BY post_bar_id) c on a.id = c.post_bar_id
+        <include refid="where"/>
+        ORDER BY a.top,a.create_time desc
+        limit #{start},#{size}
+    </select>
+
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_post_bar a
+        <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="categoryId != null and categoryId != ''">
+                AND a.category_id = #{categoryId}
+            </if>
+            <if test="userId != null and userId != ''">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="state != null and state != ''">
+                AND a.`state` = #{state}
+            </if>
+        </where>
+    </sql>
+</mapper>

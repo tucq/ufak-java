@@ -85,4 +85,8 @@ public class AfterSaleInvoice {
 	 */
 	@TableField(exist = false)
 	private String orderId;
+	@TableField(exist = false)
+	private java.lang.String afterSaleNo;
+	@TableField(exist = false)
+	private java.lang.String statusText;
 }

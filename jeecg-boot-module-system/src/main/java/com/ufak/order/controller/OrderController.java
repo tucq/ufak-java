@@ -1,6 +1,7 @@
 package com.ufak.order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
@@ -21,10 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 订单主表
@@ -184,6 +182,23 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 		orderDetailService.save(orderDetail);
 		return Result.ok("添加成功！");
 	}
+
+	/**
+	 * 发货
+	 * @param order
+	 * @return
+	 */
+	@PostMapping(value = "/send/goods")
+	public Result<?> sendGoods(@RequestBody Order order) {
+		LambdaUpdateWrapper<Order> uw = new LambdaUpdateWrapper();
+		uw.set(Order::getOrderStatus,Constants.WAIT_RECEIVE);
+		uw.set(Order::getLogisticsNo,order.getLogisticsNo());
+		uw.set(Order::getUpdateTime,new Date());
+		uw.eq(Order::getId,order.getId());
+		orderService.update(uw);
+		return Result.ok("发货成功！");
+	}
+
 
 	/**
 	 * 申请开票

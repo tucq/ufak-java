@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -60,7 +61,7 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
         afterSale.setStatus(Constants.STATUS_PROCESS);
         afterSale.setTransactionId(order.getTransactionId());
         afterSale.setTotalFee(order.getTotalFee());//微信订单金额(分)
-        afterSale.setRefundFee(order.getCashFee());//退款金额
+        afterSale.setRefundFee(order.getTotalFee());//退款金额
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String afterSaleNo = "TK"+sdf.format(new Date()) + String.valueOf(Math.round((Math.random()+1) * 1000));//订单号
         afterSale.setAfterSaleNo(afterSaleNo);
@@ -68,7 +69,9 @@ public class AfterSaleRefundServiceImpl extends ServiceImpl<AfterSaleRefundMappe
         afterSaleService.save(afterSale);
 
         afterSaleRefund.setAfterSaleId(afterSale.getId());
-        afterSaleRefund.setPaymentAmount(order.getPaymentAmount());
+        BigDecimal totalFee = new BigDecimal(order.getTotalFee());
+        BigDecimal b = new BigDecimal(100);
+        afterSaleRefund.setPaymentAmount(totalFee.divide(b));
         afterSaleRefund.setTransactionId(order.getTransactionId());
         this.save(afterSaleRefund);
 

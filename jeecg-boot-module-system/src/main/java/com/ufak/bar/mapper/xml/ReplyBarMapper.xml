@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ufak.bar.mapper.ReplyBarMapper">
+
+    <select id="selectPage" parameterType="map" resultType="com.ufak.bar.entity.ReplyBar">
+        SELECT
+        a.*,
+        IFNULL(b.reply_num,0) as reply_num
+        from t_reply_bar a
+        LEFT JOIN (SELECT reply_bar_id,count(1) as reply_num from t_reply_answer GROUP BY reply_bar_id) b on a.id = b.reply_bar_id
+        <include refid="where"/>
+        ORDER BY ${orderBy}
+        limit #{start},#{size}
+    </select>
+
+    <select id="totalCount" parameterType="map" resultType="long">
+        SELECT count(1) FROM t_reply_bar a
+        <include refid="where"/>
+    </select>
+
+    <sql id="where">
+        <where>
+            <if test="postBarId != null and postBarId != ''">
+                AND a.post_bar_id = #{postBarId}
+            </if>
+            <if test="state != null and state != ''">
+                AND a.`state` = #{state}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

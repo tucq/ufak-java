@@ -88,8 +88,8 @@ public class PayController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-//        BigDecimal paymentAmount = totalAmount.add(freightAmount).add(eventAmount).add(couponAmount);//实付金额
-        BigDecimal paymentAmount = new BigDecimal("0.01");// 开发测试使用1分钱
+        BigDecimal paymentAmount = totalAmount.add(freightAmount).add(eventAmount).add(couponAmount);//实付金额
+//        BigDecimal paymentAmount = new BigDecimal("0.01");// 开发测试使用1分钱
         Map<String, String> map = weixinPrePay(trade_no,paymentAmount,description,openId,IPUtils.getIpAddr(request));//预支付返回信息
         if("SUCCESS".equals(map.get("return_code"))){ //返回状态码
             if("SUCCESS".equals(map.get("result_code"))){ //业务结果

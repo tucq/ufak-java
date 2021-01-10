@@ -1,5 +1,6 @@
 package com.ufak.wx.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ufak.aftesale.entity.AfterSale;
@@ -21,6 +22,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.encryption.AesEncryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,43 +61,35 @@ public class RefundController {
     private String randomString = PayCommonUtil.getRandomString(32);
 
     /** 微信订单退款
-     * @param request
+     * @param jsonObject
      * @return
      */
     @RequestMapping(value = "/wxRefund", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Result<?> wxRefund(HttpServletRequest request) {
-        String transactionId = request.getParameter("transactionId");//微信支付订单号
-        String outRefundNo = request.getParameter("afterSaleNo");//退款售后单号
-        String totalFee = request.getParameter("totalFee");
-        String refundFee = request.getParameter("refundFee");
+    public Result<?> wxRefund(@RequestBody JSONObject jsonObject) {
+        String afterSaleId = jsonObject.getString("afterSaleId");//退款售后id
+        AfterSale afterSale = afterSaleService.getById(afterSaleId);
+        if(afterSale == null){
+            return Result.error("退款ID="+afterSaleId+"不存在，请联系技术人员");
+        }
+
+        String transactionId = afterSale.getTransactionId();//微信支付订单号
+        String outRefundNo = afterSale.getAfterSaleNo();//退款售后单号
+        String totalFee = String.valueOf(afterSale.getTotalFee());
+        String refundFee = String.valueOf(afterSale.getRefundFee());
 
         //退款校验
         QueryWrapper<Order> qryOrder = new QueryWrapper<>();
         qryOrder.eq("transaction_id",transactionId);
         Order order = orderService.getOne(qryOrder);
         if(order == null){
-            return Result.error("微信交易单号不存在，请联系客服人员");
+            return Result.error("微信交易单号不存在，请联系技术人员");
         }
         if(order.getTotalFee() != Integer.valueOf(totalFee)){
-            return Result.error("申请退款订单金额与下单支付订单金额不一致，请检查数据是否被篡改！");
+            return Result.error("申请退款订单金额与下单支付订单金额不一致，请技术人员检查数据是否被篡改！");
         }
         if(order.getCashFee() != Integer.valueOf(refundFee)){
-            return Result.error("申请退款金额与下单支付现金金额不一致，请检查数据是否被篡改！");
-        }
-
-        // 返回库存， TODO 库存处理后期考虑 MQ
-        List<OrderDetail> orderDetails = orderDetailService.queryByOrderId(order.getId());
-        try{
-            for(OrderDetail detail: orderDetails){
-                productPriceService.returnStock(detail.getProductId(), detail.getSpecs1Id(), detail.getSpecs2Id(), detail.getBuyNum());
-            }
-        }catch (JeecgBootException e){
-            log.error("系统繁忙，请稍后处理",e);
-            return Result.error("系统繁忙，请稍后处理");
-        }catch (Exception e){
-            log.error("申请退款异常",e);
-            return Result.error("申请退款异常，请联系技术人员");
+            return Result.error("申请退款金额与下单支付现金金额不一致，请技术人员检查数据是否被篡改！");
         }
 
         SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
@@ -121,7 +115,23 @@ public class RefundController {
                     // TODO 扣除客户积分
                     log.info("商户退款单号: " + afterSaleNo);
                     log.info("退款金额: " + refund_fee);
-                    return Result.ok();
+
+                    // 返回库存， TODO 库存处理后期考虑 MQ
+                    List<OrderDetail> orderDetails = orderDetailService.queryByOrderId(order.getId());
+                    try{
+                        for(OrderDetail detail: orderDetails){
+                            productPriceService.returnStock(detail.getProductId(), detail.getSpecs1Id(), detail.getSpecs2Id(), detail.getBuyNum());
+                        }
+                        return Result.ok("退款成功，库存退回成功");
+                    }catch (JeecgBootException e){
+                        log.error("退款成功，库存更新失败，库存版本号已变更",e);
+//                        return Result.error("系统繁忙，请稍后处理");
+                        return Result.ok("退款成功，库存退回失败");
+                    }catch (Exception e){
+                        log.error("申请退款异常",e);
+//                        return Result.error("申请退款异常，请联系技术人员");
+                        return Result.ok("退款成功，库存退回异常");
+                    }
                 }else{
                     log.error("退款失败：退款单号="+outRefundNo+", 原因："+map.get("err_code_des"));
                     return Result.error(map.get("err_code_des"));//失败结果

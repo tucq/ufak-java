@@ -3,9 +3,9 @@
 <mapper namespace="com.ufak.aftesale.mapper.AfterSaleMapper">
 
     <select id="queryPageList" parameterType="map" resultType="com.ufak.aftesale.entity.AfterSale">
-        SELECT id,create_time,status,order_id,order_detail_id,after_sale_no, service_type,refund_fee FROM t_after_sale
+        SELECT id,create_time,status,order_id,order_detail_id,after_sale_no, service_type,refund_fee,transaction_id FROM t_after_sale
         <include refid="where"/>
-        ORDER BY create_time desc
+        ORDER BY status asc,create_time desc
         limit #{start},#{size}
     </select>
 
