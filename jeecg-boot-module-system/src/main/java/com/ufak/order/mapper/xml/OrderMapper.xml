@@ -5,7 +5,7 @@
     <select id="queryAppPageList" parameterType="map" resultType="com.ufak.order.entity.Order">
         SELECT id,create_time,order_status, payment_amount FROM t_order
         <include refid="where"/>
-        ORDER BY create_time desc
+        ORDER BY update_time desc
         limit #{start},#{size}
     </select>
 
@@ -33,7 +33,7 @@
     <select id="queryBackPageList" parameterType="map" resultType="com.ufak.order.entity.Order">
         SELECT *,CONCAT(username,' ',telephone) as username_tel,CONCAT(address,'  ',detail_address) as user_address FROM t_order
         <include refid="whereBack"/>
-        ORDER BY create_time desc
+        ORDER BY update_time desc
         limit #{start},#{size}
     </select>
 

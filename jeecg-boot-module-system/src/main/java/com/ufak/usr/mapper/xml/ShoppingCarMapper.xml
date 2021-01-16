@@ -8,7 +8,8 @@
         specs1.specs_image as view_image,
         IF(ISNULL(specs2.specs_title),specs1.specs_title,CONCAT(specs1.specs_title,' ',specs2.specs_title)) as specs_name,
         price.price,
-        price.stock
+        price.stock,
+        info.freight_amount
         FROM
         t_shopping_car car
         LEFT JOIN t_product_info info ON car.product_id = info.id

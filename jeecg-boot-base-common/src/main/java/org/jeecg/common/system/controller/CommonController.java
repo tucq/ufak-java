@@ -1,20 +1,9 @@
 package org.jeecg.common.system.controller;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
@@ -25,7 +14,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -77,6 +71,49 @@ public class CommonController {
 				dbpath = dbpath.replace("\\", "/");
 			}
 			result.setResult(index);
+			result.setMessage(dbpath);
+			result.setSuccess(true);
+		} catch (IOException e) {
+			result.setSuccess(false);
+			result.setMessage(e.getMessage());
+			log.error(e.getMessage(), e);
+		}
+		return result;
+	}
+
+	/**
+	 * 分类上传图片
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@PostMapping(value = "/byType/upload")
+	public Result<?> byTypeUpload(HttpServletRequest request, HttpServletResponse response) {
+		Result<String> result = new Result<>();
+		try {
+			String imgType = request.getParameter("imgType");
+			if(StringUtils.isEmpty(imgType)){
+				return Result.error("imgType参数未传");
+			}
+			String ctxPath = uploadpath;
+			String fileName = null;
+			String bizPath = "files" + File.separator + imgType;
+			String nowday = new SimpleDateFormat("yyyyMMdd").format(new Date());
+			File file = new File(ctxPath + File.separator + File.separator + bizPath + File.separator + nowday);
+			if (!file.exists()) {
+				file.mkdirs();// 创建文件根目录
+			}
+			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+			MultipartFile mf = multipartRequest.getFile("file");// 获取上传文件对象
+			String orgName = mf.getOriginalFilename();// 获取文件名
+			fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+			String savePath = file.getPath() + File.separator + fileName;
+			File savefile = new File(savePath);
+			FileCopyUtils.copy(mf.getBytes(), savefile);
+			String dbpath =  bizPath + File.separator + nowday + File.separator + fileName;
+			if (dbpath.contains("\\")) {
+				dbpath = dbpath.replace("\\", "/");
+			}
 			result.setMessage(dbpath);
 			result.setSuccess(true);
 		} catch (IOException e) {

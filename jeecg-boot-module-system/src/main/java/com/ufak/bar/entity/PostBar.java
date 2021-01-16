@@ -14,6 +14,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 贴吧
@@ -47,7 +48,7 @@ public class PostBar {
 	/**图片路径，多个逗号隔开*/
 	@Excel(name = "图片路径，多个逗号隔开", width = 15)
     @ApiModelProperty(value = "图片路径，多个逗号隔开")
-	private Object images;
+	private String images;
 	/**用户id*/
 	@Excel(name = "用户id", width = 15)
     @ApiModelProperty(value = "用户id")
@@ -64,10 +65,6 @@ public class PostBar {
 	@Excel(name = "分享数量", width = 15)
     @ApiModelProperty(value = "分享数量")
 	private Integer shareNum;
-	/**点赞数量*/
-	@Excel(name = "点赞数量", width = 15)
-    @ApiModelProperty(value = "点赞数量")
-	private Integer likesNum;
 	/**状态，0-显示，1-隐藏*/
 	@Excel(name = "状态，0-显示，1-隐藏", width = 15)
     @ApiModelProperty(value = "状态，0-显示，1-隐藏")
@@ -89,4 +86,20 @@ public class PostBar {
 	/**回复数量*/
 	@TableField(exist = false)
 	private Integer replyNum;
+	@TableField(exist = false)
+	private Integer likesNum;
+	@TableField(exist = false)
+	private String categoryText;
+	@TableField(exist = false)
+	private String stateText;
+//	@TableField(exist = false)
+//	private IPage<ReplyBar> pageList;
+
+	@TableField(exist = false)
+	private boolean hasFans;
+	@TableField(exist = false)
+	private boolean hasLikes;
+	@TableField(exist = false)
+	private List<String> imageList;
+
 }

@@ -60,6 +60,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void submitOrder(Order order, String payInfo) throws Exception {
+        order.setUpdateTime(new Date());
         this.save(order);
         String orderId = order.getId();
         if(StringUtils.isNotBlank(payInfo) && !"null".equals(payInfo)){

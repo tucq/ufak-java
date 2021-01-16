@@ -85,10 +85,10 @@ public class RefundController {
         if(order == null){
             return Result.error("微信交易单号不存在，请联系技术人员");
         }
-        if(order.getTotalFee() != Integer.valueOf(totalFee)){
+        if(!order.getTotalFee().equals(Integer.valueOf(totalFee))){
             return Result.error("申请退款订单金额与下单支付订单金额不一致，请技术人员检查数据是否被篡改！");
         }
-        if(order.getCashFee() != Integer.valueOf(refundFee)){
+        if(!order.getCashFee().equals(Integer.valueOf(refundFee))){
             return Result.error("申请退款金额与下单支付现金金额不一致，请技术人员检查数据是否被篡改！");
         }
 

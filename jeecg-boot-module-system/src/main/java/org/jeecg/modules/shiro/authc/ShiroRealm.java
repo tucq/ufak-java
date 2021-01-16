@@ -155,7 +155,8 @@ public class ShiroRealm extends AuthorizingRealm {
 					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, CommonConstant.WX_CLIENT_EXPIRE_TIME);
 				}else{ // 平台用户刷新时间为 1 小时
 					redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
-					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME *2 / 1000);
+//					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME *2 / 1000);
+					redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, CommonConstant.WX_CLIENT_EXPIRE_TIME);
 				}
 //                log.info("——————————用户在线操作，更新token保证不掉线—————————jwtTokenRefresh——————— "+ token);
 			}

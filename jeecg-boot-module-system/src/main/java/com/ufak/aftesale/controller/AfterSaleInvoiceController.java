@@ -1,5 +1,6 @@
 package com.ufak.aftesale.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -147,8 +148,11 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	@ApiOperation(value="售后开票明细-编辑", notes="售后开票明细-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody AfterSaleInvoice afterSaleInvoice) {
-		afterSaleInvoiceService.updateById(afterSaleInvoice);
-		return Result.ok("编辑成功!");
+		AfterSale afterSale = new AfterSale();
+		afterSale.setId(afterSaleInvoice.getAfterSaleId());
+		afterSale.setStatus(Constants.STATUS_COMPLETE);
+		afterSaleService.updateById(afterSale);
+		return Result.ok("操作成功!");
 	}
 	
 	/**
@@ -182,14 +186,25 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	/**
 	 * 通过id查询
 	 *
-	 * @param id
+	 * @param afterSaleId
 	 * @return
 	 */
 	@AutoLog(value = "售后开票明细-通过id查询")
 	@ApiOperation(value="售后开票明细-通过id查询", notes="售后开票明细-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		AfterSaleInvoice afterSaleInvoice = afterSaleInvoiceService.getById(id);
+	public Result<?> queryById(@RequestParam(name="afterSaleId",required=true) String afterSaleId) {
+		AfterSale afterSale = afterSaleService.getById(afterSaleId);
+		LambdaQueryWrapper<AfterSaleInvoice> qw = new LambdaQueryWrapper<>();
+		qw.eq(AfterSaleInvoice::getAfterSaleId,afterSaleId);
+		AfterSaleInvoice afterSaleInvoice = afterSaleInvoiceService.getOne(qw);
+		afterSaleInvoice.setAfterSaleNo(afterSale.getAfterSaleNo());
+		if(Constants.STATUS_PROCESS.equals(afterSale.getStatus())){
+			afterSaleInvoice.setStatusText("待处理");
+		}else if(Constants.STATUS_COMPLETE.equals(afterSale.getStatus())){
+			afterSaleInvoice.setStatusText("已完成");
+		}else if(Constants.STATUS_CANCEL.equals(afterSale.getStatus())){
+			afterSaleInvoice.setStatusText("客户取消");
+		}
 		return Result.ok(afterSaleInvoice);
 	}
 

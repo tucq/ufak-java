@@ -148,6 +148,7 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		shoppingCar.setSpecsName(specsName);
 		shoppingCar.setPrice(price.getPrice().toString());
 		shoppingCar.setBuyNum(Integer.valueOf(buyNum));
+		shoppingCar.setFreightAmount(product.getFreightAmount());
 		return Result.ok(shoppingCar);
 	}
 

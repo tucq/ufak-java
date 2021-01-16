@@ -13,6 +13,7 @@ import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -75,6 +76,8 @@ public class ShoppingCar {
 	private String price;
 	@TableField(exist = false)
 	private String stock;
-
+	/**运费*/
+	@TableField(exist = false)
+	private BigDecimal freightAmount;
 
 }

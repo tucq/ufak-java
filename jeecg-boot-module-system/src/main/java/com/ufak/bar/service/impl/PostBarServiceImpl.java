@@ -10,6 +10,8 @@ import com.ufak.bar.service.IPostBarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +38,30 @@ public class PostBarServiceImpl extends ServiceImpl<PostBarMapper, PostBar> impl
     }
 
     @Override
+    public void likes(UserBar userBar) {
+        postBarMapper.insertBarLikes(userBar);
+    }
+
+    @Override
+    public void cancelLikes(UserBar userBar) {
+        postBarMapper.deleteBarLikes(userBar);
+    }
+
+    @Override
     public IPage<PostBar> selectPage(Integer pageNo, Integer pageSize, Map paramMap) {
         int start = (pageNo - 1) * pageSize;
         paramMap.put("start",start);
         paramMap.put("size",pageSize);
         List<PostBar> list = postBarMapper.selectPage(paramMap);
+        for(PostBar postBar : list){
+            String images = postBar.getImages();
+            if(images != null){
+                String[] str = images.split(",");
+                List<String> imgList = new ArrayList<>();
+                Collections.addAll(imgList,str);
+                postBar.setImageList(imgList);
+            }
+        }
         long totalCount = postBarMapper.totalCount(paramMap);
         Page page = new Page(pageNo, pageSize);
         page.setRecords(list);

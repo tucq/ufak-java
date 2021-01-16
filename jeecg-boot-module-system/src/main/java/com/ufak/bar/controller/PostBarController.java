@@ -1,9 +1,13 @@
 package com.ufak.bar.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.bar.entity.PostBar;
 import com.ufak.bar.entity.UserBar;
+import com.ufak.bar.mapper.PostBarMapper;
 import com.ufak.bar.service.IPostBarService;
+import com.ufak.bar.service.IReplyBarService;
+import com.ufak.common.FileUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 贴吧
@@ -35,7 +37,11 @@ import java.util.Map;
 public class PostBarController extends JeecgController<PostBar, IPostBarService> {
 	@Autowired
 	private IPostBarService postBarService;
-	
+	@Autowired
+	private IReplyBarService replyBarService;
+	@Autowired
+	private PostBarMapper postBarMapper;
+
 	/**
 	 * 分页列表查询
 	 *
@@ -50,10 +56,14 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		String title = req.getParameter("title");
 		String categoryId = req.getParameter("categoryId");
 		String userId = req.getParameter("userId");
 		String state = req.getParameter("state");
 		Map paramMap = new HashMap<>();
+		if(StringUtils.isNotBlank(title)){
+			paramMap.put("title",title);
+		}
 		if(StringUtils.isNotBlank(categoryId)){
 			paramMap.put("categoryId",categoryId);
 		}
@@ -142,69 +152,130 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 
 	 /**
 	  * 点赞
-	  * @param id
+	  * @param postBarId
 	  * @return
 	  */
 	 @PostMapping(value = "/like")
-	 public Result<?> like(@RequestParam(name="id",required=true) String id) {
-		 PostBar postBar = postBarService.getById(id);
-		 if(postBar == null){
-			 return Result.error("该id找不到对应的贴吧");
-		 }
-		 Integer count = postBar.getLikesNum() == null ? 0 : postBar.getLikesNum();
-		 count ++;
-		 postBar.setLikesNum(count);
-		 postBarService.updateById(postBar);
-		 return Result.ok(postBar);
+	 public Result<?> like(@RequestParam(name="postBarId",required=true) String postBarId,
+	 						@RequestParam(name="userId",required=true) String userId) {
+//		 PostBar postBar = postBarService.getById(postBarId);
+//		 if(postBar == null){
+//			 return Result.error("该id找不到对应的贴吧");
+//		 }
+//		 Integer count = postBar.getLikesNum() == null ? 0 : postBar.getLikesNum();
+//		 count ++;
+//		 postBar.setLikesNum(count);
+//		 postBarService.updateById(postBar);
+		 UserBar userBar = new UserBar();
+		 userBar.setId(UUIDGenerator.generate());
+		 userBar.setPostBarId(postBarId);
+		 userBar.setUserId(userId);
+		 postBarService.likes(userBar);
+		 return Result.ok();
 	 }
 
 	 /**
 	  * 取消点赞
-	  * @param id
 	  * @return
 	  */
 	 @PostMapping(value = "/cancel/like")
-	 public Result<?> cancelLike(@RequestParam(name="id",required=true) String id) {
-		 PostBar postBar = postBarService.getById(id);
-		 if(postBar == null){
-			 return Result.error("该id找不到对应的贴吧");
-		 }
-		 if(postBar.getLikesNum() != null){
-			 postBar.setLikesNum(postBar.getLikesNum() - 1);
-			 postBarService.updateById(postBar);
-		 }
-		 return Result.ok(postBar);
+	 public Result<?> cancelLike(@RequestParam(name="postBarId",required=true) String postBarId,
+								 @RequestParam(name="userId",required=true) String userId) {
+//		 PostBar postBar = postBarService.getById(postBarId);
+//		 if(postBar == null){
+//			 return Result.error("该id找不到对应的贴吧");
+//		 }
+//		 if(postBar.getLikesNum() != null){
+//			 postBar.setLikesNum(postBar.getLikesNum() - 1);
+//			 postBarService.updateById(postBar);
+//		 }
+		 UserBar userBar = new UserBar();
+		 userBar.setUserId(userId);
+		 userBar.setPostBarId(postBarId);
+		 postBarService.cancelLikes(userBar);
+		 return Result.ok();
 	 }
 
+	/**
+	 * 禁言
+	 * @return
+	 */
+	@PostMapping(value = "/forbidden")
+	public Result<?> forbidden(@RequestBody PostBar postBar) {
+		LambdaUpdateWrapper<PostBar> uw = new LambdaUpdateWrapper<>();
+		uw.set(PostBar::getState,(1 - Integer.valueOf(postBar.getState())) + "");
+		uw.eq(PostBar::getId,postBar.getId());
+		postBarService.update(uw);
+		return Result.ok("操作成功!");
+	}
 
+	@PostMapping(value = "/top")
+	public Result<?> top(@RequestBody PostBar postBar) {
+		postBarService.updateById(postBar);
+		return Result.ok("操作成功!");
+	}
+
+	/**
+	 * app 获取详情页
+	 * @return
+	 */
+	@GetMapping(value = "/app/queryById")
+	public Result<?> appQueryById(@RequestParam(name="postBarId",required=true) String postBarId,
+								  @RequestParam(name="userId",required=true) String userId) {
+		PostBar postBar = postBarService.getById(postBarId);
+		Map paramMap = new HashMap<>();
+		paramMap.put("postBarId",postBarId);
+		paramMap.put("state","0");
+		paramMap.put("orderBy","a.create_time");
+		postBar.setFansNum(postBarMapper.countFans(postBarId));
+		postBar.setLikesNum(postBarMapper.countLikes(postBarId));
+
+		int i = postBarMapper.isExistFans(postBarId,userId);
+		if(i > 0){
+			postBar.setHasFans(true);
+		}else {
+			postBar.setHasFans(false);
+		}
+
+		int j = postBarMapper.isExistLikes(postBarId,userId);
+		if(j > 0){
+			postBar.setHasLikes(true);
+		}else {
+			postBar.setHasLikes(false);
+		}
+
+		String images = postBar.getImages();
+		if(images != null){
+			String[] str = images.split(",");
+			List<String> imgList = new ArrayList<>();
+			Collections.addAll(imgList,str);
+			postBar.setImageList(imgList);
+		}
+
+//		IPage<ReplyBar> pageList = replyBarService.selectPage(1,10,paramMap);
+//		postBar.setPageList(pageList);
+		return Result.ok(postBar);
+	}
 
 
 	 /**
 	 * 通过id删除
-	 *
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "贴吧-通过id删除")
-	@ApiOperation(value="贴吧-通过id删除", notes="贴吧-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		postBarService.removeById(id);
+		PostBar pi = postBarService.getById(id);
+		if(pi != null){
+			String url = pi.getImages();
+			String[] urls = url.split(",");
+			for(int i = 0;i < urls.length; i++){
+				FileUtil.delete(urls[i]);// 删除图片
+			}
+			postBarService.removeById(id);
+		}
+
 		return Result.ok("删除成功!");
-	}
-	
-	/**
-	 * 批量删除
-	 *
-	 * @param ids
-	 * @return
-	 */
-	@AutoLog(value = "贴吧-批量删除")
-	@ApiOperation(value="贴吧-批量删除", notes="贴吧-批量删除")
-	@DeleteMapping(value = "/deleteBatch")
-	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.postBarService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
 	}
 	
 	/**

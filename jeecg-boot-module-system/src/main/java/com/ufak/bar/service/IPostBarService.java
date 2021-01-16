@@ -27,6 +27,19 @@ public interface IPostBarService extends IService<PostBar> {
      */
     void cancelFans(UserBar userBar);
 
+    /**
+     * 点赞
+     * @param userBar
+     */
+    void likes(UserBar userBar);
+
+    /**
+     * 取消点赞
+     * @param userBar
+     */
+    void cancelLikes(UserBar userBar);
+
+
     IPage<PostBar> selectPage(Integer pageNo, Integer pageSize, Map paramMap);
 
 }

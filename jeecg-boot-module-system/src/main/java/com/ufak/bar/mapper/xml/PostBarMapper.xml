@@ -3,12 +3,28 @@
 <mapper namespace="com.ufak.bar.mapper.PostBarMapper">
     <select id="selectPage" parameterType="map" resultType="com.ufak.bar.entity.PostBar">
         SELECT
-        a.*,
-        IFNULL(b.reply_num,0) as reply_num ,
-        IFNULL(c.fans_num,0) as fans_num
+            a.`id`,
+            a.`category_id`,
+            a.`title`,
+            a.`content`,
+            a.`images`,
+            a.`user_id`,
+            a.`realname`,
+            a.`avatar`,
+            a.`share_num`,
+            IFNULL(e.`likes_num`,0) as likes_num,
+            a.`state`,
+            a.`top` ,
+            a.`create_time`,
+            d.item_text as category_text,
+            IF(a.state='0','显示','禁言') as state_text,
+            IFNULL(b.reply_num,0) as reply_num ,
+            IFNULL(c.fans_num,0) as fans_num
         from t_post_bar a
         LEFT JOIN (SELECT post_bar_id,count(1) as reply_num from t_reply_bar GROUP BY post_bar_id) b on a.id = b.post_bar_id
         LEFT JOIN (SELECT post_bar_id,count(1) fans_num from t_user_bar GROUP BY post_bar_id) c on a.id = c.post_bar_id
+        LEFT JOIN  (SELECT post_bar_id,count(1) as likes_num from t_bar_likes GROUP BY post_bar_id) e on a.id = e.post_bar_id
+        LEFT JOIN sys_dict_item d on a.category_id = d.id
         <include refid="where"/>
         ORDER BY a.top,a.create_time desc
         limit #{start},#{size}
@@ -21,6 +37,9 @@
 
     <sql id="where">
         <where>
+            <if test="title != null and title != ''">
+                AND a.title like CONCAT(#{title},'%')
+            </if>
             <if test="categoryId != null and categoryId != ''">
                 AND a.category_id = #{categoryId}
             </if>
