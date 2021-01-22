@@ -2,16 +2,20 @@ package com.ufak.wx.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.ufak.ads.entity.FlashSale;
+import com.ufak.ads.service.IFlashSaleService;
 import com.ufak.common.Constants;
 import com.ufak.common.HttpRequestUtil;
 import com.ufak.common.PayCommonUtil;
 import com.ufak.order.entity.Order;
 import com.ufak.order.service.IOrderService;
+import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.service.IProductInfoService;
 import com.ufak.product.service.IProductPriceService;
 import com.ufak.usr.entity.ShoppingCar;
 import com.ufak.usr.service.IShoppingCarService;
+import com.ufak.wx.entity.PayInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -20,6 +24,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.MD5Util;
 import org.jeecg.common.util.RedisUtil;
@@ -33,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -55,6 +61,8 @@ public class PayController {
     private IProductInfoService productInfoService;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private IFlashSaleService flashSaleService;
 
     private String randomString = PayCommonUtil.getRandomString(32);
 
@@ -70,13 +78,25 @@ public class PayController {
         String telephone = request.getParameter("telephone");
         String address = request.getParameter("address");
         String detailAddress = request.getParameter("detailAddress");
-        BigDecimal totalAmount = new BigDecimal(request.getParameter("totalAmount"));//订单总金额
-        BigDecimal freightAmount = new BigDecimal(request.getParameter("freightAmount"));//运费
-        BigDecimal eventAmount = new BigDecimal(request.getParameter("eventAmount"));// 活动优惠券 负数
-        BigDecimal couponAmount = new BigDecimal(request.getParameter("couponAmount")); // 优惠券 负数
+        String flashSaleId = request.getParameter("flashSaleId");// 是否秒杀支付，秒杀id
+//        BigDecimal totalAmount = new BigDecimal(request.getParameter("totalAmount"));//订单总金额
+//        BigDecimal freightAmount = new BigDecimal(request.getParameter("freightAmount"));//运费
+//        BigDecimal eventAmount = new BigDecimal(request.getParameter("eventAmount"));// 活动优惠券 负数
+//        BigDecimal couponAmount = new BigDecimal(request.getParameter("couponAmount")); // 优惠券 负数
         String remark = request.getParameter("remark");
         String createTime = request.getParameter("createTime");
-        String payInfo = request.getParameter("payInfo");// 通过购物车结算是为空，立即购买是不为空
+        String payMsg = request.getParameter("payInfo");// 通过购物车结算是为空，立即购买是不为空
+        PayInfo payInfo = null;
+        if(StringUtils.isNotEmpty(flashSaleId)){
+            //秒杀购买
+            payInfo = getKillPayInfo(flashSaleId);
+            if(payInfo.getProductNames().length() > 0){
+                return Result.error(payInfo.getProductNames());
+            }
+        }else{
+            // 正常购买途径
+            payInfo = getPayInfo(payMsg);
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String trade_no = sdf.format(new Date()) + String.valueOf(Math.round((Math.random()+1) * 1000));//订单号
@@ -88,12 +108,12 @@ public class PayController {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        BigDecimal paymentAmount = totalAmount.add(freightAmount).add(eventAmount).add(couponAmount);//实付金额
+//        BigDecimal paymentAmount = totalAmount.add(freightAmount).add(eventAmount).add(couponAmount);//实付金额
 //        BigDecimal paymentAmount = new BigDecimal("0.01");// 开发测试使用1分钱
-        Map<String, String> map = weixinPrePay(trade_no,paymentAmount,description,openId,IPUtils.getIpAddr(request));//预支付返回信息
+        Map<String, String> map = weixinPrePay(trade_no,payInfo.getPaymentAmount(),description,openId,IPUtils.getIpAddr(request));//预支付返回信息
         if("SUCCESS".equals(map.get("return_code"))){ //返回状态码
             if("SUCCESS".equals(map.get("result_code"))){ //业务结果
-                String pnames = this.checkStock(payInfo);
+                String pnames = payInfo.getProductNames();
                 if(pnames.length() > 0){
                     return Result.error("非常抱歉！["+pnames+"]库存已不足！请查看其它规格或类似商品！");
                 }
@@ -125,11 +145,11 @@ public class PayController {
                 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                 order.setUserId(sysUser.getId());
                 order.setOrderNo(trade_no);
-                order.setTotalAmount(totalAmount);
-                order.setFreightAmount(freightAmount);
-                order.setEventAmount(eventAmount);
-                order.setCouponAmount(couponAmount);
-                order.setPaymentAmount(paymentAmount);
+                order.setTotalAmount(payInfo.getTotalAmount());
+                order.setFreightAmount(payInfo.getFreightAmount());
+                order.setEventAmount(payInfo.getEventAmount());
+                order.setCouponAmount(payInfo.getCouponAmount());
+                order.setPaymentAmount(payInfo.getPaymentAmount());
                 order.setOrderStatus(Constants.WAIT_PAY);
                 order.setUsername(username);
                 order.setTelephone(telephone);
@@ -138,7 +158,7 @@ public class PayController {
                 order.setRemark(remark);
                 order.setCreateTime(new Date(Long.valueOf(createTime)));
                 try {
-                    orderService.submitOrder(order,payInfo);
+                    orderService.submitOrder(order,payMsg);
                     finalpackage.put("orderId",order.getId());//保存成功后返回orderId
                     finalpackage.put("createTime",createTime);//返回创建时间，用于前端计算失效时间
                     return Result.ok(finalpackage);
@@ -157,23 +177,29 @@ public class PayController {
     }
 
     /**
-     * 校验库存是否足够
-     * @param payInfo
+     * 获取支付信息
+     * @param payMsg
      * @return
      */
-    private String checkStock(String payInfo){
+    private PayInfo getPayInfo(String payMsg){
+        PayInfo payInfo = new PayInfo();
         String productNames = "";
-        if(StringUtils.isNotBlank(payInfo) && !"null".equals(payInfo)){
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        BigDecimal freightAmount = BigDecimal.ZERO;
+        if(StringUtils.isNotBlank(payMsg) && !"null".equals(payMsg)){
             //商品立即购买
-            JSONObject json = JSONObject.parseObject(payInfo);
+            JSONObject json = JSONObject.parseObject(payMsg);
             String productId = json.getString("productId");
             String specs1Id = json.getString("specs1Id");
             String specs2Id = json.getString("specs2Id");
             String buyNum = json.getString("buyNum");
+            ProductInfo productInfo = productInfoService.getById(productId);
             ProductPrice pp = productPriceService.getPrice(productId,specs1Id,specs2Id);
             if(pp.getStock() < Integer.valueOf(buyNum)){
                 productNames = productInfoService.getById(productId).getName();
             }
+            totalAmount = pp.getPrice().multiply(new BigDecimal(buyNum));
+            freightAmount = productInfo.getFreightAmount();
         }else{
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             List<ShoppingCar> carList = shoppingCarService.getPayforList(sysUser.getId());
@@ -182,13 +208,55 @@ public class PayController {
                 if(pp.getStock() < car.getBuyNum()){
                     productNames = productNames + productInfoService.getById(car.getProductId()).getName() + "/";
                 }
+                totalAmount = totalAmount.add(pp.getPrice().multiply(new BigDecimal(car.getBuyNum())));
+
+                ProductInfo productInfo = productInfoService.getById(car.getProductId());
+                if(productInfo.getFreightAmount().compareTo(freightAmount) > 0){
+                    freightAmount = productInfo.getFreightAmount();
+                }
             }
             if(productNames.length() > 0){
                 productNames = productNames.substring(0,productNames.lastIndexOf("/"));
             }
         }
+        payInfo.setProductNames(productNames);
+        payInfo.setTotalAmount(totalAmount);
+        payInfo.setFreightAmount(freightAmount);
+        payInfo.setCouponAmount(BigDecimal.ZERO);
+        payInfo.setEventAmount(BigDecimal.ZERO);
+        payInfo.setBuyType(0);//正常购买
 
-        return productNames;
+        return payInfo;
+    }
+
+    /**
+     * 秒杀支付信息
+     * @param flashSaleId
+     * @return
+     */
+    private PayInfo getKillPayInfo(String flashSaleId){
+        PayInfo payInfo = new PayInfo();
+        FlashSale flashSale = flashSaleService.getById(flashSaleId);
+        ProductInfo productInfo = productInfoService.getById(flashSale.getProductId());
+        BigDecimal freightAmount = productInfo.getFreightAmount();
+        try {
+            Date endTime = DateUtils.parseDate(DateUtils.formatDate() + " " + flashSale.getEndTime(),"yyyy-MM-dd HH:mm");
+            if(new Date().compareTo(endTime) > 0){
+                payInfo.setProductNames("活动时间已结束，期待您的下次参与");
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(flashSale.getStock() <= 0){
+            payInfo.setProductNames("商品已抢购完华，下次加油哦");
+        }
+        payInfo.setBuyType(1);// 秒杀购买
+        payInfo.setTotalAmount(flashSale.getKillPrice().add(freightAmount));
+        payInfo.setFreightAmount(freightAmount);
+        payInfo.setCouponAmount(BigDecimal.ZERO);
+        payInfo.setEventAmount(BigDecimal.ZERO);
+
+        return payInfo;
     }
 
    /**

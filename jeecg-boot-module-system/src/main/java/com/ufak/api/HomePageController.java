@@ -2,7 +2,9 @@ package com.ufak.api;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ufak.ads.entity.FlashSale;
 import com.ufak.ads.entity.HomepageAds;
+import com.ufak.ads.service.IFlashSaleService;
 import com.ufak.ads.service.IHomepageAdsService;
 import com.ufak.common.Constants;
 import com.ufak.product.entity.ProductInfo;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,8 @@ public class HomePageController {
     private IHomepageAdsService homepageAdsService;
     @Autowired
     private ISysDictService sysDictService;
+    @Autowired
+    private IFlashSaleService flashSaleService;
 
     @GetMapping(value = "/list")
     public Result<Map> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -64,11 +69,19 @@ public class HomePageController {
         paramMap.put("salesVolume","desc");//按销量排序
         IPage<ProductInfo> pageList = productInfoService.queryPhoneProductPage(pageNo,pageSize,paramMap);
 
+        paramMap.put("state", Constants.YES);//限时抢购
+        IPage<FlashSale> flashSalePage = flashSaleService.selectPage(1,9999,paramMap);// 限时抢购
+        for(FlashSale flashSale : flashSalePage.getRecords()){
+            flashSale.setStartTime(DateUtils.formatDate() + " " + flashSale.getStartTime());
+            flashSale.setEndTime(DateUtils.formatDate() + " " + flashSale.getEndTime());
+        }
+
         pageList.getRecords();
         map.put("headList",headList);
         map.put("categoryList",categoryList);
         map.put("insertList",insertList);
         map.put("productList",pageList.getRecords());
+        map.put("flashSaleList",flashSalePage.getRecords());
         result.setResult(map);
         result.setSuccess(true);
         return result;

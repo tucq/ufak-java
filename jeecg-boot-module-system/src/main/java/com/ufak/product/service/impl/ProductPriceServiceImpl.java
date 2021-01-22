@@ -55,6 +55,15 @@ public class ProductPriceServiceImpl extends ServiceImpl<ProductPriceMapper, Pro
         return this.getOne(qw);
     }
 
+
+    @Override
+    public ProductPrice getDefaultPrice(String productId) {
+        QueryWrapper<ProductPrice> qw = new QueryWrapper<>();
+        qw.eq("product_id",productId);
+        qw.eq("default_flag","0");
+        return this.getOne(qw);
+    }
+
     @Override
     public void returnStock(String productId, String specs1Id, String specs2Id, Integer buyNum) throws Exception {
         ProductPrice price = this.getPrice(productId,specs1Id,specs2Id);

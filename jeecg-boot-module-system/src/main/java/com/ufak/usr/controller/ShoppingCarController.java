@@ -1,8 +1,11 @@
 package com.ufak.usr.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ufak.ads.entity.FlashSale;
+import com.ufak.ads.service.IFlashSaleService;
 import com.ufak.product.entity.ProductInfo;
 import com.ufak.product.entity.ProductPrice;
 import com.ufak.product.entity.ProductSpecs;
@@ -18,15 +21,15 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * @Description: 购物车
@@ -47,6 +50,8 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	private IProductSpecsService productSpecsService;
 	@Autowired
 	private IProductPriceService productPriceService;
+	@Autowired
+	private IFlashSaleService flashSaleService;
 	
 	/**
 	 * 分页列表查询
@@ -100,6 +105,45 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 
 		return Result.ok("添加成功！");
 	}
+
+
+	/**
+	 * 限时秒杀添加
+	 * @param jsonObject
+	 * @return
+	 */
+	@PostMapping(value = "/killBuyAdd")
+	public Result<?> killBuyAdd(@RequestBody JSONObject jsonObject) {
+		String flashSaleId = jsonObject.getString("flashSaleId");
+		FlashSale flashSale = flashSaleService.getById(flashSaleId);
+		try {
+			Date endTime = DateUtils.parseDate(DateUtils.formatDate() + " " + flashSale.getEndTime(),"yyyy-MM-dd HH:mm");
+			if(new Date().compareTo(endTime) > 0){
+				return Result.error("活动时间已结束，期待您的下次参与");
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		if(flashSale.getStock() <= 0){
+			return Result.error("商品已抢购完华，下次加油哦");
+		}
+
+		List<ProductSpecs> specsList = productSpecsService.getProductDefaultSpecs(flashSale.getProductId());
+		ShoppingCar car = new ShoppingCar();
+		car.setProductId(flashSale.getProductId());
+		car.setBuyNum(1);
+		for (int i = 0; i < specsList.size(); i++) {
+			if (i == 0) {
+				car.setSpecs1Id(specsList.get(0).getId());
+			} else if (i == 1) {
+				car.setSpecs2Id(specsList.get(1).getId());
+			}
+		}
+		return Result.ok(car);
+	}
+
+
 	
 	/**
 	 * 编辑
@@ -127,6 +171,7 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		String specs1Id = req.getParameter("specs1Id");
 		String specs2Id = req.getParameter("specs2Id");
 		String buyNum = req.getParameter("buyNum");
+		String flashSaleId = req.getParameter("flashSaleId");
 		ShoppingCar shoppingCar= new ShoppingCar();
 
 		ProductInfo product = productInfoService.getById(productId);
@@ -139,14 +184,20 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		}
 		ProductPrice price = productPriceService.getOne(qryPrice);
 		shoppingCar.setProductName(product.getName());
-		shoppingCar.setViewImage(product.getImage().split(",")[0]);
+//		shoppingCar.setViewImage(product.getImage().split(",")[0]);
+		shoppingCar.setViewImage(specs1.getSpecsImage());//显示购买规格的图片
 		String specsName = specs1.getSpecsTitle();
 		if(StringUtils.isNotBlank(specs2Id) && !"null".equals(specs2Id)){
 			ProductSpecs specs2 = productSpecsService.getById(specs2Id);
 			specsName = " " + specs2.getSpecsTitle();
 		}
 		shoppingCar.setSpecsName(specsName);
-		shoppingCar.setPrice(price.getPrice().toString());
+		if(StringUtils.isNotEmpty(flashSaleId)){
+			FlashSale flashSale = flashSaleService.getById(flashSaleId);
+			shoppingCar.setPrice(String.valueOf(flashSale.getKillPrice()));//获取秒杀价
+		}else{
+			shoppingCar.setPrice(price.getPrice().toString());
+		}
 		shoppingCar.setBuyNum(Integer.valueOf(buyNum));
 		shoppingCar.setFreightAmount(product.getFreightAmount());
 		return Result.ok(shoppingCar);

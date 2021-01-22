@@ -1,5 +1,6 @@
 package com.ufak.bar.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.bar.entity.PostBar;
@@ -229,6 +230,11 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 		paramMap.put("orderBy","a.create_time");
 		postBar.setFansNum(postBarMapper.countFans(postBarId));
 		postBar.setLikesNum(postBarMapper.countLikes(postBarId));
+
+		QueryWrapper qw = new QueryWrapper();
+		qw.eq("post_bar_id",postBarId);
+		int replyNum = replyBarService.count(qw);
+		postBar.setReplyNum(replyNum);
 
 		int i = postBarMapper.isExistFans(postBarId,userId);
 		if(i > 0){

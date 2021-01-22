@@ -56,8 +56,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-分页列表查询")
-	@ApiOperation(value="商品信息-分页列表查询", notes="商品信息-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,

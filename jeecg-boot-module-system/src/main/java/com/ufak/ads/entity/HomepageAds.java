@@ -69,6 +69,8 @@ public class HomepageAds implements Serializable {
 	@ApiModelProperty(value = "是否列表: 0-是, 1-否")
 	@Dict(dicCode = "stats")
 	private String isList;
+	/**页面跳转路径*/
+	private String pagePath;
 	/**创建人员*/
 	@Excel(name = "创建人员", width = 15)
     @ApiModelProperty(value = "创建人员")

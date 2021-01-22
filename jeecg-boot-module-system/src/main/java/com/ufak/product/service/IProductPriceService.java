@@ -42,6 +42,13 @@ public interface IProductPriceService extends IService<ProductPrice> {
     ProductPrice getPrice(String productId,String specs1Id,String specs2Id);
 
     /**
+     * 查询商品默认规格价格
+     * @param productId
+     * @return
+     */
+    ProductPrice getDefaultPrice(String productId);
+
+    /**
      * 订单取消返回库存
      * @param productId
      * @param specs1Id
