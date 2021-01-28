@@ -69,7 +69,7 @@
     </sql>
     <sql id="phoneProductOrderBy">
         <if test="salesVolume != null and salesVolume != ''">
-            ORDER BY info.sales_volume ${salesVolume}
+            ORDER BY info.virtual_volume ${salesVolume}
         </if>
         <if test="price != null and price != ''">
             ORDER BY price.price ${price}
