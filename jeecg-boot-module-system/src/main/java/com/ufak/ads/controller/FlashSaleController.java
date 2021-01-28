@@ -1,10 +1,13 @@
 package com.ufak.ads.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.ads.entity.FlashSale;
 import com.ufak.ads.service.IFlashSaleService;
 import com.ufak.common.Constants;
+import com.ufak.order.entity.Order;
+import com.ufak.order.service.IOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +38,8 @@ import java.util.Map;
 public class FlashSaleController extends JeecgController<FlashSale, IFlashSaleService> {
 	@Autowired
 	private IFlashSaleService flashSaleService;
+	@Autowired
+	private IOrderService orderService;
 
 	/**
 	 * 分页列表查询
@@ -127,6 +132,22 @@ public class FlashSaleController extends JeecgController<FlashSale, IFlashSaleSe
 		updateWrapper.eq(FlashSale::getId,id);
 		flashSaleService.update(updateWrapper);
 		return Result.ok("停用成功!");
+	}
+
+	/**
+	 * 秒杀支付取消
+	 * @return
+	 */
+	@PostMapping(value = "/cancel")
+	public Result<?> cancel(@RequestBody JSONObject jsonObject) {
+		FlashSale flashSale = flashSaleService.getById(jsonObject.getString("flashSaleId"));
+		flashSale.setStock(flashSale.getStock() + 1);
+		flashSaleService.updateById(flashSale);
+
+		Order order = orderService.getById(jsonObject.getString("orderId"));
+		order.setOrderStatus(Constants.CANCELLED);
+		orderService.updateById(order);
+		return Result.ok("秒杀取消成功!");
 	}
 	
 	/**

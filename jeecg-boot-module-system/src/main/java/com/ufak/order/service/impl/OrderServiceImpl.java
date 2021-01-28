@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ufak.ads.entity.FlashSale;
+import com.ufak.ads.service.IFlashSaleService;
 import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
@@ -56,6 +58,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private RedisUtil redisUtil;
     @Autowired
     private IProductInfoService productInfoService;
+    @Autowired
+    private IFlashSaleService flashSaleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -70,15 +74,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             String specs1Id = json.getString("specs1Id");
             String specs2Id = json.getString("specs2Id");
             String buyNum = json.getString("buyNum");
+            String flashSaleId = json.getString("flashSaleId");
             ProductPrice price = productPriceService.getPrice(productId,specs1Id,specs2Id);
             OrderDetail orderDetail = this.setOrderDetail(orderId,productId,specs1Id,specs2Id,buyNum,price.getPrice());
             orderDetailService.save(orderDetail);
 
-            price.setStock(price.getStock() - Integer.valueOf(buyNum));// 更新库存数量
-            boolean b = productPriceService.updateById(price);// 采用乐观锁更新库存
-            if(!b){
-                throw new JeecgBootException("系统繁忙，请稍候重试！");
+            if(StringUtils.isEmpty(flashSaleId)){
+                price.setStock(price.getStock() - Integer.valueOf(buyNum));// 更新库存数量
+                boolean b = productPriceService.updateById(price);// 采用乐观锁更新库存
+                if(!b){
+                    throw new JeecgBootException("系统繁忙，请稍候重试！");
+                }
+            }else{
+                // 更新秒杀库存
+                FlashSale flashSale = flashSaleService.getById(flashSaleId);
+                flashSale.setStock(flashSale.getStock() - 1);
+                flashSaleService.updateById(flashSale);
             }
+
         }else {
             //商品通过购物车购买
             String userId = order.getUserId();

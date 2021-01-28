@@ -161,6 +161,7 @@ public class PayController {
                     orderService.submitOrder(order,payMsg);
                     finalpackage.put("orderId",order.getId());//保存成功后返回orderId
                     finalpackage.put("createTime",createTime);//返回创建时间，用于前端计算失效时间
+                    finalpackage.put("flashSaleId",flashSaleId);//返回秒杀id
                     return Result.ok(finalpackage);
                 }catch (JeecgBootException e){
                     return Result.error(e.getMessage());// 乐观锁检测库存已被更改
@@ -239,6 +240,7 @@ public class PayController {
         FlashSale flashSale = flashSaleService.getById(flashSaleId);
         ProductInfo productInfo = productInfoService.getById(flashSale.getProductId());
         BigDecimal freightAmount = productInfo.getFreightAmount();
+        payInfo.setProductNames("");
         try {
             Date endTime = DateUtils.parseDate(DateUtils.formatDate() + " " + flashSale.getEndTime(),"yyyy-MM-dd HH:mm");
             if(new Date().compareTo(endTime) > 0){
@@ -251,7 +253,7 @@ public class PayController {
             payInfo.setProductNames("商品已抢购完华，下次加油哦");
         }
         payInfo.setBuyType(1);// 秒杀购买
-        payInfo.setTotalAmount(flashSale.getKillPrice().add(freightAmount));
+        payInfo.setTotalAmount(flashSale.getKillPrice());
         payInfo.setFreightAmount(freightAmount);
         payInfo.setCouponAmount(BigDecimal.ZERO);
         payInfo.setEventAmount(BigDecimal.ZERO);

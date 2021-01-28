@@ -1,6 +1,7 @@
 package com.ufak.usr.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -201,6 +202,20 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 		shoppingCar.setBuyNum(Integer.valueOf(buyNum));
 		shoppingCar.setFreightAmount(product.getFreightAmount());
 		return Result.ok(shoppingCar);
+	}
+
+
+	/**
+	 * 获取购物车购买数量
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping(value = "/buyNum")
+	public Result<?> getBuyNum(@RequestParam(name="userId",required=true) String userId) {
+		LambdaQueryWrapper<ShoppingCar> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(ShoppingCar::getUserId,userId);
+		int count = shoppingCarService.count(queryWrapper);
+		return Result.ok(count);
 	}
 
 

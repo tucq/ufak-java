@@ -1,11 +1,15 @@
 package com.ufak.order.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ufak.aftesale.entity.AfterSale;
+import com.ufak.aftesale.service.IAfterSaleService;
 import com.ufak.common.Constants;
 import com.ufak.order.entity.Order;
 import com.ufak.order.entity.OrderDetail;
+import com.ufak.order.mapper.OrderMapper;
 import com.ufak.order.service.IOrderDetailService;
 import com.ufak.order.service.IOrderService;
 import io.swagger.annotations.Api;
@@ -39,6 +43,11 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	private IOrderService orderService;
 	@Autowired
 	private IOrderDetailService orderDetailService;
+	@Autowired
+	private OrderMapper orderMapper;
+	@Autowired
+	private IAfterSaleService afterSaleService;
+
 
 	/**
 	 * 分页列表查询
@@ -49,8 +58,6 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-分页列表查询")
-	@ApiOperation(value="订单主表-分页列表查询", notes="订单主表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(Order order,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -218,12 +225,43 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param order
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-添加")
-	@ApiOperation(value="订单主表-添加", notes="订单主表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody Order order) {
 		orderService.save(order);
 		return Result.ok("添加成功！");
+	}
+
+
+	/**
+	 * 获取用户订单数
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping(value = "/myOrderNum")
+	public Result<?> myOrderNum(@RequestParam(name="userId",required=true) String userId) {
+		Map<String,Integer> reslut = new HashMap<>();
+		reslut.put("wait_pay",0);
+		reslut.put("wait_send",0);
+		reslut.put("wait_receive",0);
+
+		List<Order> list = orderMapper.getMyOrderNum(userId);
+		for(Order order : list){
+			if(Constants.WAIT_PAY.equals(order.getOrderStatus())){
+				reslut.put("wait_pay",order.getTotalFee());
+			}else if(Constants.WAIT_SEND.equals(order.getOrderStatus())){
+				reslut.put("wait_send",order.getTotalFee());
+			}else if(Constants.WAIT_RECEIVE.equals(order.getOrderStatus())){
+				reslut.put("wait_receive",order.getTotalFee());
+			}
+		}
+
+		LambdaQueryWrapper<AfterSale> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(AfterSale::getUserId,userId);
+		queryWrapper.eq(AfterSale::getStatus,"0");
+		int count = afterSaleService.count(queryWrapper);
+		reslut.put("after_sales",count);
+
+		return Result.ok(reslut);
 	}
 
 
