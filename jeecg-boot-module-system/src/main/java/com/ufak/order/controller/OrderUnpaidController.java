@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.order.entity.OrderUnpaid;
+import com.ufak.order.service.IOrderService;
 import com.ufak.order.service.IOrderUnpaidService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 
- /**
+/**
  * @Description: 未付款订单签名
  * @Author: jeecg-boot
  * @Date:   2020-11-13
@@ -33,6 +34,8 @@ import java.util.Arrays;
 public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUnpaidService> {
 	@Autowired
 	private IOrderUnpaidService orderUnpaidService;
+	@Autowired
+	private IOrderService orderService;
 	
 	/**
 	 * 分页列表查询
@@ -77,6 +80,14 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	  */
 	 @RequestMapping(value = "/{orderId}", method = RequestMethod.GET)
 	 public Result<?> getByOrderId(@PathVariable String orderId) {
+//		 Order order = orderService.getById(orderId);
+//		 long diff = new Date().getTime() - order.getCreateTime().getTime();
+//		 long d = 30 * 60 * 1000;
+//		 if(diff > d){
+//		 	order.setOrderStatus(Constants.CANCELLED);
+//		 	orderService.updateById(order);
+//		 	return Result.error("非常抱歉,该笔订单已退款");
+//		 }
 		 QueryWrapper<OrderUnpaid> qw = new QueryWrapper<>();
 		 qw.eq("order_id", orderId);
 		 OrderUnpaid orderUnpaid = orderUnpaidService.getOne(qw);
