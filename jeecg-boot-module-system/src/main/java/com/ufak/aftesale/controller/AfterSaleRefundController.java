@@ -10,8 +10,13 @@ import com.ufak.aftesale.entity.AfterSaleRefund;
 import com.ufak.aftesale.service.IAfterSaleRefundService;
 import com.ufak.aftesale.service.IAfterSaleService;
 import com.ufak.common.Constants;
+import com.ufak.order.entity.Order;
+import com.ufak.order.entity.OrderDetail;
+import com.ufak.order.service.IOrderDetailService;
+import com.ufak.order.service.IOrderService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.map.HashedMap;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -24,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +47,10 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 	private IAfterSaleRefundService afterSaleRefundService;
 	@Autowired
 	private IAfterSaleService afterSaleService;
+	@Autowired
+	private IOrderService orderService;
+	@Autowired
+	private IOrderDetailService orderDetailService;
 
 	/**
 	 * 申请退款
@@ -194,7 +204,14 @@ public class AfterSaleRefundController extends JeecgController<AfterSaleRefund, 
 		}else if(Constants.STATUS_CANCEL.equals(afterSale.getStatus())){
 			afterSaleRefund.setStatusText("客户取消");
 		}
-		return Result.ok(afterSaleRefund);
+
+		Order order = orderService.getById(afterSale.getOrderId());
+		List<OrderDetail> orderDetails = orderDetailService.queryByOrderId(afterSale.getOrderId());
+		Map<String,Object> result = new HashedMap();
+		result.put("afterSaleRefund",afterSaleRefund);
+		result.put("order",order);
+		result.put("orderDetails",orderDetails);
+		return Result.ok(result);
 	}
 
 	/**
