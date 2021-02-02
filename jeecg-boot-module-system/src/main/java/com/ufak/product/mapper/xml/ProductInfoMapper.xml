@@ -42,6 +42,7 @@
             info.`name`,
             info.description,
             info.sales_volume,
+            info.virtual_volume,
             price.price,
             price.virtual_price
         FROM
@@ -123,6 +124,7 @@
             info.description,
             info.service,
             info.sales_volume,
+            info.virtual_volume,
             info.freight_amount,
             info.key_point,
             info.refund_validity,

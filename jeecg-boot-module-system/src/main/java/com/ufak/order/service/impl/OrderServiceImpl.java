@@ -155,6 +155,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         for(Order order : list){
             List orderDetails = orderDetailService.queryByOrderId(order.getId());
             order.setOrderDetails(orderDetails);
+            order.setCreateTimeLong(order.getCreateTime().getTime());
         }
         long totalCount = orderMapper.totalCount(paramMap);
         Page page = new Page(pageNo, pageSize);

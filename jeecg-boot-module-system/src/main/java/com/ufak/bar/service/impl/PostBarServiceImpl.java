@@ -7,6 +7,7 @@ import com.ufak.bar.entity.PostBar;
 import com.ufak.bar.entity.UserBar;
 import com.ufak.bar.mapper.PostBarMapper;
 import com.ufak.bar.service.IPostBarService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,7 @@ public class PostBarServiceImpl extends ServiceImpl<PostBarMapper, PostBar> impl
         List<PostBar> list = postBarMapper.selectPage(paramMap);
         for(PostBar postBar : list){
             String images = postBar.getImages();
-            if(images != null){
+            if(StringUtils.isNotBlank(images)){
                 String[] str = images.split(",");
                 List<String> imgList = new ArrayList<>();
                 Collections.addAll(imgList,str);

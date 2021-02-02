@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.util.*;
 
 @Slf4j
 @Api(tags="小程序首页API")
@@ -71,8 +69,14 @@ public class HomePageController {
         paramMap.put("state", Constants.YES);//限时抢购
         IPage<FlashSale> flashSalePage = flashSaleService.selectPage(1,9999,paramMap);// 限时抢购
         for(FlashSale flashSale : flashSalePage.getRecords()){
-            flashSale.setStartTime(DateUtils.formatDate() + " " + flashSale.getStartTime());
-            flashSale.setEndTime(DateUtils.formatDate() + " " + flashSale.getEndTime());
+            try {
+                Date startTime =  DateUtils.parseDate(DateUtils.formatDate() + " " + flashSale.getStartTime(),"yyyy-MM-dd HH:mm:ss");
+                Date endTime =  DateUtils.parseDate(DateUtils.formatDate() + " " + flashSale.getEndTime(),"yyyy-MM-dd HH:mm:ss");
+                flashSale.setStartTime(String.valueOf(startTime.getTime()));
+                flashSale.setEndTime(String.valueOf(endTime.getTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         pageList.getRecords();

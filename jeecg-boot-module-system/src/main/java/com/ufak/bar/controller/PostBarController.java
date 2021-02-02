@@ -251,7 +251,7 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 		}
 
 		String images = postBar.getImages();
-		if(images != null){
+		if(StringUtils.isNotBlank(images)){
 			String[] str = images.split(",");
 			List<String> imgList = new ArrayList<>();
 			Collections.addAll(imgList,str);

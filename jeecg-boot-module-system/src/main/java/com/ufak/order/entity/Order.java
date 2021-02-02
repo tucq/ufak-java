@@ -145,4 +145,8 @@ public class Order {
 		return orderDetails;
 	}
 
+	/**创建时间戳*/
+	@TableField(exist = false)
+	private long createTimeLong;
+
 }

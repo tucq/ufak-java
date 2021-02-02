@@ -104,7 +104,7 @@ public class PayController {
         String description = null;
         try {
             //福安康医疗用品支付
-            description = new String("福安康医疗用品".getBytes("UTF-8"),"UTF-8");
+            description = new String("福安康医护用品".getBytes("UTF-8"),"UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

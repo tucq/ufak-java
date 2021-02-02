@@ -14,6 +14,7 @@
 		   select s.item_text from sys_dict_item s 
 		   where s.dict_id = (select id from sys_dict where dict_code = #{code})
 		   and s.item_value = #{key}
+		   and s.status = '1'
 	</select>
 
 
