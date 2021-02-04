@@ -43,8 +43,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-分页列表查询")
-	@ApiOperation(value="用户收藏列表-分页列表查询", notes="用户收藏列表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(UserProduct userProduct,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -62,8 +60,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param userProduct
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-添加")
-	@ApiOperation(value="用户收藏列表-添加", notes="用户收藏列表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody UserProduct userProduct) {
 		userProductService.save(userProduct);
@@ -76,8 +72,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param userProduct
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-编辑")
-	@ApiOperation(value="用户收藏列表-编辑", notes="用户收藏列表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody UserProduct userProduct) {
 		userProductService.updateById(userProduct);
@@ -90,8 +84,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-通过id删除")
-	@ApiOperation(value="用户收藏列表-通过id删除", notes="用户收藏列表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		userProductService.removeById(id);
@@ -104,8 +96,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-批量删除")
-	@ApiOperation(value="用户收藏列表-批量删除", notes="用户收藏列表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.userProductService.removeByIds(Arrays.asList(ids.split(",")));
@@ -118,8 +108,6 @@ public class UserProductController extends JeecgController<UserProduct, IUserPro
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "用户收藏列表-通过id查询")
-	@ApiOperation(value="用户收藏列表-通过id查询", notes="用户收藏列表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		UserProduct userProduct = userProductService.getById(id);

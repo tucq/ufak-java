@@ -271,8 +271,6 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param order
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-编辑")
-	@ApiOperation(value="订单主表-编辑", notes="订单主表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody Order order) {
 		orderService.updateById(order);
@@ -285,8 +283,6 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-通过id删除")
-	@ApiOperation(value="订单主表-通过id删除", notes="订单主表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		try {
@@ -304,8 +300,6 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-批量删除")
-	@ApiOperation(value="订单主表-批量删除", notes="订单主表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.orderService.removeByIds(Arrays.asList(ids.split(",")));
@@ -318,8 +312,6 @@ public class OrderController extends JeecgController<Order, IOrderService> {
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "订单主表-通过id查询")
-	@ApiOperation(value="订单主表-通过id查询", notes="订单主表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		Order order = orderService.getById(id);

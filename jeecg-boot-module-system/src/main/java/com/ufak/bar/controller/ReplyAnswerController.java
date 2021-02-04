@@ -157,8 +157,6 @@ public class ReplyAnswerController extends JeecgController<ReplyAnswer, IReplyAn
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "回复交流-通过id删除")
-	@ApiOperation(value="回复交流-通过id删除", notes="回复交流-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		replyAnswerService.removeById(id);
@@ -184,8 +182,6 @@ public class ReplyAnswerController extends JeecgController<ReplyAnswer, IReplyAn
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "回复交流-通过id查询")
-	@ApiOperation(value="回复交流-通过id查询", notes="回复交流-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ReplyAnswer replyAnswer = replyAnswerService.getById(id);

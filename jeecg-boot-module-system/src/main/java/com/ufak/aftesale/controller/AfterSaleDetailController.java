@@ -151,8 +151,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param req
      * @return
      */
-    @AutoLog(value = "退款/售后明细-分页列表查询")
-    @ApiOperation(value = "退款/售后明细-分页列表查询", notes = "退款/售后明细-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(AfterSaleDetail afterSaleDetail,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -170,8 +168,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param afterSaleDetail
      * @return
      */
-    @AutoLog(value = "退款/售后明细-添加")
-    @ApiOperation(value = "退款/售后明细-添加", notes = "退款/售后明细-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody AfterSaleDetail afterSaleDetail) {
         afterSaleDetailService.save(afterSaleDetail);
@@ -184,8 +180,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param afterSaleDetail
      * @return
      */
-    @AutoLog(value = "退款/售后明细-编辑")
-    @ApiOperation(value = "退款/售后明细-编辑", notes = "退款/售后明细-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody AfterSaleDetail afterSaleDetail) {
         afterSaleDetailService.updateById(afterSaleDetail);
@@ -198,8 +192,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param id
      * @return
      */
-    @AutoLog(value = "退款/售后明细-通过id删除")
-    @ApiOperation(value = "退款/售后明细-通过id删除", notes = "退款/售后明细-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         afterSaleDetailService.removeById(id);
@@ -212,8 +204,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param ids
      * @return
      */
-    @AutoLog(value = "退款/售后明细-批量删除")
-    @ApiOperation(value = "退款/售后明细-批量删除", notes = "退款/售后明细-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.afterSaleDetailService.removeByIds(Arrays.asList(ids.split(",")));
@@ -226,8 +216,6 @@ public class AfterSaleDetailController extends JeecgController<AfterSaleDetail, 
      * @param id
      * @return
      */
-    @AutoLog(value = "退款/售后明细-通过id查询")
-    @ApiOperation(value = "退款/售后明细-通过id查询", notes = "退款/售后明细-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         AfterSaleDetail afterSaleDetail = afterSaleDetailService.getById(id);

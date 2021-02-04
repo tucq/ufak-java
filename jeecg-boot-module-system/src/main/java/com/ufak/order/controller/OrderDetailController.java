@@ -43,8 +43,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-分页列表查询")
-	@ApiOperation(value="订单明细-分页列表查询", notes="订单明细-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(OrderDetail orderDetail,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -62,8 +60,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param orderDetail
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-添加")
-	@ApiOperation(value="订单明细-添加", notes="订单明细-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody OrderDetail orderDetail) {
 		orderDetailService.save(orderDetail);
@@ -76,8 +72,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param orderDetail
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-编辑")
-	@ApiOperation(value="订单明细-编辑", notes="订单明细-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody OrderDetail orderDetail) {
 		orderDetailService.updateById(orderDetail);
@@ -90,8 +84,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-通过id删除")
-	@ApiOperation(value="订单明细-通过id删除", notes="订单明细-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		orderDetailService.removeById(id);
@@ -104,8 +96,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-批量删除")
-	@ApiOperation(value="订单明细-批量删除", notes="订单明细-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.orderDetailService.removeByIds(Arrays.asList(ids.split(",")));
@@ -118,8 +108,6 @@ public class OrderDetailController extends JeecgController<OrderDetail, IOrderDe
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "订单明细-通过id查询")
-	@ApiOperation(value="订单明细-通过id查询", notes="订单明细-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		OrderDetail orderDetail = orderDetailService.getById(id);

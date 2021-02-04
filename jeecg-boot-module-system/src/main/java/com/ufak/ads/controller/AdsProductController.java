@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.ads.entity.AdsProduct;
 import com.ufak.ads.service.IAdsProductService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +40,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-分页列表查询")
-	@ApiOperation(value="广告关联商品信息-分页列表查询", notes="广告关联商品信息-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -63,8 +59,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param adsProduct
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-添加")
-	@ApiOperation(value="广告关联商品信息-添加", notes="广告关联商品信息-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody AdsProduct adsProduct) {
 		adsProductService.save(adsProduct);
@@ -77,8 +71,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param adsProduct
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-编辑")
-	@ApiOperation(value="广告关联商品信息-编辑", notes="广告关联商品信息-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody AdsProduct adsProduct) {
 		adsProductService.updateById(adsProduct);
@@ -91,8 +83,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-通过id删除")
-	@ApiOperation(value="广告关联商品信息-通过id删除", notes="广告关联商品信息-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		adsProductService.removeById(id);
@@ -105,8 +95,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-批量删除")
-	@ApiOperation(value="广告关联商品信息-批量删除", notes="广告关联商品信息-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.adsProductService.removeByIds(Arrays.asList(ids.split(",")));
@@ -119,8 +107,6 @@ public class AdsProductController extends JeecgController<AdsProduct, IAdsProduc
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "广告关联商品信息-通过id查询")
-	@ApiOperation(value="广告关联商品信息-通过id查询", notes="广告关联商品信息-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		AdsProduct adsProduct = adsProductService.getById(id);

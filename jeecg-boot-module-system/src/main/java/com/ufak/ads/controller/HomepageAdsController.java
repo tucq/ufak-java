@@ -51,8 +51,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-分页列表查询")
-	@ApiOperation(value="首页广告-分页列表查询", notes="首页广告-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(HomepageAds homepageAds,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -71,8 +69,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param homepageAds
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-添加")
-	@ApiOperation(value="首页广告-添加", notes="首页广告-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody HomepageAds homepageAds) {
 		homepageAdsService.save(homepageAds);
@@ -83,8 +79,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	  * 添加商品
 	  * @return
 	  */
-	 @AutoLog(value = "添加商品")
-	 @ApiOperation(value="添加商品", notes="添加商品")
 	 @PostMapping(value = "/addProduct")
 	 public Result<?> addProduct(@RequestBody JSONObject jsonObject) {
 		 JSONArray array = jsonObject.getJSONArray("productIds");
@@ -109,8 +103,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param homepageAds
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-编辑")
-	@ApiOperation(value="首页广告-编辑", notes="首页广告-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody HomepageAds homepageAds) {
 		homepageAdsService.updateById(homepageAds);
@@ -122,8 +114,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-通过id删除")
-	@ApiOperation(value="首页广告-通过id删除", notes="首页广告-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		HomepageAds ads = homepageAdsService.getById(id);
@@ -148,8 +138,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-批量删除")
-	@ApiOperation(value="首页广告-批量删除", notes="首页广告-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.homepageAdsService.removeByIds(Arrays.asList(ids.split(",")));
@@ -162,8 +150,6 @@ public class HomepageAdsController extends JeecgController<HomepageAds, IHomepag
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "首页广告-通过id查询")
-	@ApiOperation(value="首页广告-通过id查询", notes="首页广告-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		HomepageAds homepageAds = homepageAdsService.getById(id);

@@ -43,8 +43,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-分页列表查询")
-	@ApiOperation(value="贴吧回复-分页列表查询", notes="贴吧回复-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(ReplyBar replyBar,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -81,8 +79,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param replyBar
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-添加")
-	@ApiOperation(value="贴吧回复-添加", notes="贴吧回复-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ReplyBar replyBar) {
 		replyBarService.save(replyBar);
@@ -95,8 +91,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param replyBar
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-编辑")
-	@ApiOperation(value="贴吧回复-编辑", notes="贴吧回复-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ReplyBar replyBar) {
 		replyBarService.updateById(replyBar);
@@ -109,8 +103,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-通过id删除")
-	@ApiOperation(value="贴吧回复-通过id删除", notes="贴吧回复-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		replyBarService.removeById(id);
@@ -196,8 +188,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-批量删除")
-	@ApiOperation(value="贴吧回复-批量删除", notes="贴吧回复-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.replyBarService.removeByIds(Arrays.asList(ids.split(",")));
@@ -212,8 +202,6 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "贴吧回复-通过id查询")
-	@ApiOperation(value="贴吧回复-通过id查询", notes="贴吧回复-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ReplyBar replyBar = replyBarService.getById(id);

@@ -46,8 +46,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-分页列表查询")
-	@ApiOperation(value="未付款订单签名-分页列表查询", notes="未付款订单签名-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(OrderUnpaid orderUnpaid,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -65,8 +63,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param orderUnpaid
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-添加")
-	@ApiOperation(value="未付款订单签名-添加", notes="未付款订单签名-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody OrderUnpaid orderUnpaid) {
 		orderUnpaidService.save(orderUnpaid);
@@ -100,8 +96,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param orderUnpaid
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-编辑")
-	@ApiOperation(value="未付款订单签名-编辑", notes="未付款订单签名-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody OrderUnpaid orderUnpaid) {
 		orderUnpaidService.updateById(orderUnpaid);
@@ -114,8 +108,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-通过id删除")
-	@ApiOperation(value="未付款订单签名-通过id删除", notes="未付款订单签名-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		orderUnpaidService.removeById(id);
@@ -128,8 +120,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-批量删除")
-	@ApiOperation(value="未付款订单签名-批量删除", notes="未付款订单签名-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.orderUnpaidService.removeByIds(Arrays.asList(ids.split(",")));
@@ -142,8 +132,6 @@ public class OrderUnpaidController extends JeecgController<OrderUnpaid, IOrderUn
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "未付款订单签名-通过id查询")
-	@ApiOperation(value="未付款订单签名-通过id查询", notes="未付款订单签名-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		OrderUnpaid orderUnpaid = orderUnpaidService.getById(id);

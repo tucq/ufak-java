@@ -44,8 +44,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-分页列表查询")
-	@ApiOperation(value="商品规格-分页列表查询", notes="商品规格-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(ProductSpecs productSpecs,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -67,8 +65,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param productSpecs
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-添加")
-	@ApiOperation(value="商品规格-添加", notes="商品规格-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ProductSpecs productSpecs) {
 		productSpecsService.save(productSpecs);
@@ -81,8 +77,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param productSpecs
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-编辑")
-	@ApiOperation(value="商品规格-编辑", notes="商品规格-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ProductSpecs productSpecs) {
 		productSpecsService.updateById(productSpecs);
@@ -95,8 +89,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-通过id删除")
-	@ApiOperation(value="商品规格-通过id删除", notes="商品规格-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		productSpecsService.removeById(id);
@@ -109,8 +101,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-批量删除")
-	@ApiOperation(value="商品规格-批量删除", notes="商品规格-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.productSpecsService.removeByIds(Arrays.asList(ids.split(",")));
@@ -123,8 +113,6 @@ public class ProductSpecsController extends JeecgController<ProductSpecs, IProdu
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品规格-通过id查询")
-	@ApiOperation(value="商品规格-通过id查询", notes="商品规格-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ProductSpecs productSpecs = productSpecsService.getById(id);

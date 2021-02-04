@@ -290,8 +290,6 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "贴吧-通过id查询")
-	@ApiOperation(value="贴吧-通过id查询", notes="贴吧-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		PostBar postBar = postBarService.getById(id);

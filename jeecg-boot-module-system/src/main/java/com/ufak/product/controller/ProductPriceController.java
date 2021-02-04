@@ -47,8 +47,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-分页列表查询")
-	@ApiOperation(value="商品价格库存-分页列表查询", notes="商品价格库存-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -68,8 +66,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param productPrice
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-添加")
-	@ApiOperation(value="商品价格库存-添加", notes="商品价格库存-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ProductPrice productPrice) {
 		productPriceService.save(productPrice);
@@ -82,8 +78,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param productPrice
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-编辑")
-	@ApiOperation(value="商品价格库存-编辑", notes="商品价格库存-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ProductPrice productPrice) {
 		productPriceService.updateById(productPrice);
@@ -94,8 +88,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * 编辑价格
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-编辑")
-	@ApiOperation(value="商品信息-编辑", notes="商品信息-编辑")
 	@PutMapping(value = "/update/price")
 	public Result<?> updatePrice(@RequestBody JSONObject jsonObject) {
 		JSONArray array = jsonObject.getJSONArray("productPriceList");
@@ -125,8 +117,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-通过id删除")
-	@ApiOperation(value="商品价格库存-通过id删除", notes="商品价格库存-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		productPriceService.removeById(id);
@@ -139,8 +129,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-批量删除")
-	@ApiOperation(value="商品价格库存-批量删除", notes="商品价格库存-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.productPriceService.removeByIds(Arrays.asList(ids.split(",")));
@@ -153,8 +141,6 @@ public class ProductPriceController extends JeecgController<ProductPrice, IProdu
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品价格库存-通过id查询")
-	@ApiOperation(value="商品价格库存-通过id查询", notes="商品价格库存-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ProductPrice productPrice = productPriceService.getById(id);

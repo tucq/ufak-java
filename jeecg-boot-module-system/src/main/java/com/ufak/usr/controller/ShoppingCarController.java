@@ -62,7 +62,6 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	 * @param req
 	 * @return
 	 */
-	@ApiOperation(value="购物车-分页列表查询", notes="购物车-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -86,7 +85,6 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	 * @param shoppingCar
 	 * @return
 	 */
-	@ApiOperation(value="购物车-添加", notes="购物车-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ShoppingCar shoppingCar) {
 		QueryWrapper qw = new QueryWrapper();
@@ -152,8 +150,6 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	 * @param shoppingCar
 	 * @return
 	 */
-	@AutoLog(value = "购物车-编辑")
-	@ApiOperation(value="购物车-编辑", notes="购物车-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ShoppingCar shoppingCar) {
 		shoppingCarService.updateById(shoppingCar);
@@ -224,8 +220,6 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	 *
 	 * @return
 	 */
-	@AutoLog(value = "购物车-通过id删除")
-	@ApiOperation(value="购物车-通过id删除", notes="购物车-通过id删除")
 	@PostMapping(value = "/delete")
 	public Result<?> delete(@RequestBody ShoppingCar shoppingCar) {
 		shoppingCarService.removeById(shoppingCar.getId());
@@ -285,8 +279,6 @@ public class ShoppingCarController extends JeecgController<ShoppingCar, IShoppin
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "购物车-通过id查询")
-	@ApiOperation(value="购物车-通过id查询", notes="购物车-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ShoppingCar shoppingCar = shoppingCarService.getById(id);

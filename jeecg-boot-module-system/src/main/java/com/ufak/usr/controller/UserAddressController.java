@@ -52,8 +52,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-分页列表查询")
-	@ApiOperation(value="客户地址信息表-分页列表查询", notes="客户地址信息表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(UserAddress userAddress,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -104,8 +102,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 *
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-添加")
-	@ApiOperation(value="客户地址信息表-添加", notes="客户地址信息表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody JSONObject jsonObject) {
 		String userId = jsonObject.getString("userId");
@@ -130,8 +126,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 * @param userAddress
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-编辑")
-	@ApiOperation(value="客户地址信息表-编辑", notes="客户地址信息表-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody UserAddress userAddress) {
 		userAddressService.updateById(userAddress);
@@ -144,8 +138,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-通过id删除")
-	@ApiOperation(value="客户地址信息表-通过id删除", notes="客户地址信息表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		userAddressService.removeById(id);
@@ -178,8 +170,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-批量删除")
-	@ApiOperation(value="客户地址信息表-批量删除", notes="客户地址信息表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.userAddressService.removeByIds(Arrays.asList(ids.split(",")));
@@ -192,8 +182,6 @@ public class UserAddressController extends JeecgController<UserAddress, IUserAdd
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "客户地址信息表-通过id查询")
-	@ApiOperation(value="客户地址信息表-通过id查询", notes="客户地址信息表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		UserAddress userAddress = userAddressService.getById(id);

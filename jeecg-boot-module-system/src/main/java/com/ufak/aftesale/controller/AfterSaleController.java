@@ -43,8 +43,6 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "退款/售后-分页列表查询")
-	@ApiOperation(value="退款/售后-分页列表查询", notes="退款/售后-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(AfterSale afterSale,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -69,8 +67,6 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 	 * @param afterSale
 	 * @return
 	 */
-	@AutoLog(value = "退款/售后-添加")
-	@ApiOperation(value="退款/售后-添加", notes="退款/售后-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody AfterSale afterSale) {
 		afterSaleService.save(afterSale);
@@ -83,8 +79,6 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 	 * @param afterSale
 	 * @return
 	 */
-	@AutoLog(value = "退款/售后-编辑")
-	@ApiOperation(value="退款/售后-编辑", notes="退款/售后-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody AfterSale afterSale) {
 		afterSaleService.updateById(afterSale);
@@ -111,8 +105,6 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "退款/售后-批量删除")
-	@ApiOperation(value="退款/售后-批量删除", notes="退款/售后-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.afterSaleService.removeByIds(Arrays.asList(ids.split(",")));
@@ -125,8 +117,6 @@ public class AfterSaleController extends JeecgController<AfterSale, IAfterSaleSe
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "退款/售后-通过id查询")
-	@ApiOperation(value="退款/售后-通过id查询", notes="退款/售后-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		AfterSale afterSale = afterSaleService.getById(id);

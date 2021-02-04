@@ -111,8 +111,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-分页列表查询")
-	@ApiOperation(value="售后开票明细-分页列表查询", notes="售后开票明细-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(AfterSaleInvoice afterSaleInvoice,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -130,8 +128,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param afterSaleInvoice
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-添加")
-	@ApiOperation(value="售后开票明细-添加", notes="售后开票明细-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody AfterSaleInvoice afterSaleInvoice) {
 		afterSaleInvoiceService.save(afterSaleInvoice);
@@ -144,8 +140,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param afterSaleInvoice
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-编辑")
-	@ApiOperation(value="售后开票明细-编辑", notes="售后开票明细-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody AfterSaleInvoice afterSaleInvoice) {
 		AfterSale afterSale = new AfterSale();
@@ -161,8 +155,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-通过id删除")
-	@ApiOperation(value="售后开票明细-通过id删除", notes="售后开票明细-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		afterSaleInvoiceService.removeById(id);
@@ -175,8 +167,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-批量删除")
-	@ApiOperation(value="售后开票明细-批量删除", notes="售后开票明细-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.afterSaleInvoiceService.removeByIds(Arrays.asList(ids.split(",")));
@@ -189,8 +179,6 @@ public class AfterSaleInvoiceController extends JeecgController<AfterSaleInvoice
 	 * @param afterSaleId
 	 * @return
 	 */
-	@AutoLog(value = "售后开票明细-通过id查询")
-	@ApiOperation(value="售后开票明细-通过id查询", notes="售后开票明细-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="afterSaleId",required=true) String afterSaleId) {
 		AfterSale afterSale = afterSaleService.getById(afterSaleId);

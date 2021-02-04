@@ -95,8 +95,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param productInfo
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-添加")
-	@ApiOperation(value="商品信息-添加", notes="商品信息-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ProductInfo productInfo) {
 		productInfoService.saveProductInfo(productInfo);
@@ -111,8 +109,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param productInfo
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-编辑")
-	@ApiOperation(value="商品信息-编辑", notes="商品信息-编辑")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody ProductInfo productInfo) {
 		productInfoService.updateProductInfo(productInfo);
@@ -127,8 +123,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-通过id删除")
-	@ApiOperation(value="商品信息-通过id删除", notes="商品信息-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		this.deleteProduct(id);
@@ -165,8 +159,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-批量删除")
-	@ApiOperation(value="商品信息-批量删除", notes="商品信息-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		List<String> list = Arrays.asList(ids.split(","));
@@ -182,8 +174,6 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "商品信息-通过id查询")
-	@ApiOperation(value="商品信息-通过id查询", notes="商品信息-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		ProductInfo productInfo = productInfoService.getById(id);
