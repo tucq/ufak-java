@@ -1,15 +1,15 @@
 package com.ufak.bar.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ufak.bar.entity.ReplyAnswer;
 import com.ufak.bar.service.IReplyAnswerService;
+import com.ufak.wx.service.IWxSecurityCheckService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +31,11 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("/replyAnswer")
 public class ReplyAnswerController extends JeecgController<ReplyAnswer, IReplyAnswerService> {
-	@Autowired
-	private IReplyAnswerService replyAnswerService;
-	
+	 @Autowired
+	 private IReplyAnswerService replyAnswerService;
+	 @Autowired
+	 private IWxSecurityCheckService wxSecurityCheckService;
+
 	/**
 	 * 分页列表查询
 	 *
@@ -62,6 +64,15 @@ public class ReplyAnswerController extends JeecgController<ReplyAnswer, IReplyAn
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ReplyAnswer replyAnswer) {
+		String content = replyAnswer.getContent().toString();
+		JSONObject resContent = wxSecurityCheckService.msgSecCheck(content);
+		if(resContent.getIntValue("errcode") != 0){ // 内容为0则正常
+			if(resContent.getIntValue("errcode") == 87014){
+				return Result.error("回复内容含有违法违规信息,请修改后再回复!");
+			} else {
+				return Result.error("回复内容不合法: " + resContent.toJSONString());
+			}
+		}
 		replyAnswerService.save(replyAnswer);
 		return Result.ok("添加成功！");
 	}

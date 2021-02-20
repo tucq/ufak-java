@@ -1,14 +1,14 @@
 package com.ufak.bar.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ufak.bar.entity.ReplyBar;
 import com.ufak.bar.service.IReplyBarService;
+import com.ufak.wx.service.IWxSecurityCheckService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +33,8 @@ import java.util.Map;
 public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarService> {
 	@Autowired
 	private IReplyBarService replyBarService;
+	@Autowired
+	private IWxSecurityCheckService wxSecurityCheckService;
 	
 	/**
 	 * 分页列表查询
@@ -81,6 +83,15 @@ public class ReplyBarController extends JeecgController<ReplyBar, IReplyBarServi
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody ReplyBar replyBar) {
+		String content = replyBar.getContent().toString();
+		JSONObject resContent = wxSecurityCheckService.msgSecCheck(content);
+		if(resContent.getIntValue("errcode") != 0){ // 内容为0则正常
+			if(resContent.getIntValue("errcode") == 87014){
+				return Result.error("评论内容含有违法违规信息,请修改后再评论!");
+			} else {
+				return Result.error("评论内容不合法: " + resContent.toJSONString());
+			}
+		}
 		replyBarService.save(replyBar);
 		return Result.ok("添加成功！");
 	}

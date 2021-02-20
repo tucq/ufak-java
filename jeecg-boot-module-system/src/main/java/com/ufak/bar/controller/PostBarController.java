@@ -1,5 +1,6 @@
 package com.ufak.bar.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,12 +10,11 @@ import com.ufak.bar.mapper.PostBarMapper;
 import com.ufak.bar.service.IPostBarService;
 import com.ufak.bar.service.IReplyBarService;
 import com.ufak.common.FileUtil;
+import com.ufak.wx.service.IWxSecurityCheckService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.util.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,8 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 	private IReplyBarService replyBarService;
 	@Autowired
 	private PostBarMapper postBarMapper;
+	@Autowired
+	private IWxSecurityCheckService wxSecurityCheckService;
 
 	/**
 	 * 分页列表查询
@@ -87,6 +89,41 @@ public class PostBarController extends JeecgController<PostBar, IPostBarService>
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PostBar postBar) {
+		String title = postBar.getTitle();
+		String content = postBar.getContent().toString();
+
+		JSONObject resTitle = wxSecurityCheckService.msgSecCheck(title);
+		if(resTitle.getIntValue("errcode") != 0){ // 内容为0则正常
+			if(resTitle.getIntValue("errcode") == 87014){
+				return Result.error("标题含有违法违规信息,请修改后发布!");
+			} else {
+				return Result.error("标题内容不合法: " + resTitle.toJSONString());
+			}
+		}
+
+		JSONObject resContent = wxSecurityCheckService.msgSecCheck(content);
+		if(resContent.getIntValue("errcode") != 0){ // 内容为0则正常
+			if(resContent.getIntValue("errcode") == 87014){
+				return Result.error("内容含有违法违规信息,请修改后发布!");
+			} else {
+				return Result.error("发布的内容不合法: " + resContent.toJSONString());
+			}
+		}
+
+		if(StringUtils.isNotBlank(postBar.getImages())){
+			String[] filePaths = postBar.getImages().split(",");
+			for(String path : filePaths){
+				JSONObject resImage = wxSecurityCheckService.imgSecCheck(path);
+				if(resImage.getIntValue("errcode") != 0){ // 内容为0则正常
+					if(resImage.getIntValue("errcode") == 87014){
+						return Result.error("含有违法违规图片内容,请修改后发布!");
+					} else {
+						return Result.error("图片内容不合法: " + resImage.toJSONString());
+					}
+				}
+			}
+		}
+
 		postBarService.save(postBar);
 		return Result.ok("添加成功！");
 	}
