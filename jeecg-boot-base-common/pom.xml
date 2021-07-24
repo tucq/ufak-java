@@ -11,7 +11,7 @@
 		<version>2.1.3</version>
 	</parent>
 	
-	<!--test-->
+	<!--test1-->
 	<repositories>
 		<repository>
 			<id>aliyun</id>
