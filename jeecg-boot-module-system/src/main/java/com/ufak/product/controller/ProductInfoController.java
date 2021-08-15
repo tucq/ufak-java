@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.util.oss.OssBootUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -135,7 +136,8 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 			String url = pi.getImage() + pi.getDetailImages();
 			String[] urls = url.split(",");
 			for(int i = 0;i < urls.length; i++){
-				FileUtil.delete(urls[i]);// 删除图片
+//				FileUtil.delete(urls[i]);// 删除图片
+				OssBootUtil.deleteUrl(urls[i]);
 			}
 			productInfoService.removeById(id);
 
@@ -143,7 +145,8 @@ public class ProductInfoController extends JeecgController<ProductInfo, IProduct
 			rwSpecs.eq("product_id",id);
 			List<ProductSpecs> specsList = productSpecsService.list(rwSpecs);
 			for(ProductSpecs ps: specsList){
-				FileUtil.delete(ps.getSpecsImage());
+//				FileUtil.delete(ps.getSpecsImage());
+				OssBootUtil.deleteUrl(ps.getSpecsImage());
 			}
 			productSpecsService.remove(rwSpecs);
 
