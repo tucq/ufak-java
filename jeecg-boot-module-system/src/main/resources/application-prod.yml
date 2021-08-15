@@ -147,10 +147,10 @@ jeecg :
      excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
   #阿里云oss存储配置
   oss:
-    endpoint: oss-cn-guangzhou.aliyuncs.com
-    accessKey: LTAI5t7EkeqNdieXxqffYE7V
-    secretKey: aglksPrO1minnboQ8XH8rT0iGNIPB5
-    bucketName: oss-bkt-ufak-prod
+    endpoint: #
+    accessKey: #
+    secretKey: #
+    bucketName: #
     staticDomain: ??
   # ElasticSearch 设置
   elasticsearch:
