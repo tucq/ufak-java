@@ -5,6 +5,7 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.model.CannedAccessControlList;
 import com.aliyun.oss.model.PutObjectResult;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileItemStream;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,7 +22,7 @@ public class OssBootUtil {
     private static String accessKeyId;
     private static String accessKeySecret;
     private static String bucketName;
-    private static String staticDomain;
+//    private static String staticDomain;
 
     public static void setEndPoint(String endPoint) {
         OssBootUtil.endPoint = endPoint;
@@ -39,9 +40,9 @@ public class OssBootUtil {
         OssBootUtil.bucketName = bucketName;
     }
 
-    public static void setStaticDomain(String staticDomain) {
-        OssBootUtil.staticDomain = staticDomain;
-    }
+//    public static void setStaticDomain(String staticDomain) {
+//        OssBootUtil.staticDomain = staticDomain;
+//    }
 
     /**
      * oss 工具客户端
@@ -59,16 +60,27 @@ public class OssBootUtil {
      * @return oss 中的相对文件路径
      */
     public static String upload(MultipartFile file, String fileDir) {
+        return uploadOss(file,fileDir);
+    }
+
+    public static String upload(MultipartFile file) {
+        return uploadOss(file,null);
+    }
+
+    private static String uploadOss(MultipartFile file, String fileDir){
         initOSS(endPoint, accessKeyId, accessKeySecret);
         StringBuilder fileUrl = new StringBuilder();
         try {
             String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.'));
             String fileName = UUID.randomUUID().toString().replace("-", "") + suffix;
-            if (!fileDir.endsWith("/")) {
-                fileDir = fileDir.concat("/");
+            if(StringUtils.isNotEmpty(fileDir) && !"null".equals(fileDir)){
+                if (!fileDir.endsWith("/")) {
+                    fileDir = fileDir.concat("/");
+                }
+                fileUrl = fileUrl.append(fileDir + fileName);
+            }else{
+                fileUrl = fileUrl.append(fileName);
             }
-            fileUrl = fileUrl.append(fileDir + fileName);
-
             FILE_URL = "https://" + bucketName + "." + endPoint + "/" + fileUrl;
             //FILE_URL = staticDomain + "/" + fileUrl;
             PutObjectResult result = ossClient.putObject(bucketName, fileUrl.toString(), file.getInputStream());
@@ -125,10 +137,13 @@ public class OssBootUtil {
      * @param url
      */
     public static void deleteUrl(String url) {
-        String bucketUrl = "https://" + bucketName + "." + endPoint + "/";
+//        String bucketUrl = "https://" + bucketName + "." + endPoint + "/";
         //String bucketUrl = staticDomain + "/";
-        url = url.replace(bucketUrl,"");
-        ossClient.deleteObject(bucketName, url);
+//        url = url.replace(bucketUrl,"");
+        if(StringUtils.isNotEmpty(url) && !"null".equals(url)){
+            initOSS(endPoint, accessKeyId, accessKeySecret);
+            ossClient.deleteObject(bucketName, url);
+        }
     }
 
     /**

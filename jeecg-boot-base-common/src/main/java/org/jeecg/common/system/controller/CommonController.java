@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.util.oss.OssBootUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
@@ -45,41 +46,59 @@ public class CommonController {
 	public Result<?> noauth()  {
 		return Result.error("没有权限，请联系管理员授权");
 	}
-	
+
 	@PostMapping(value = "/upload")
 	public Result<?> upload(HttpServletRequest request, HttpServletResponse response) {
 		Result<String> result = new Result<>();
-		try {
-			String index = request.getParameter("index");
-			String ctxPath = uploadpath;
-			String fileName = null;
-			String bizPath = "files";
-			String nowday = new SimpleDateFormat("yyyyMMdd").format(new Date());
-			File file = new File(ctxPath + File.separator + bizPath + File.separator + nowday);
-			if (!file.exists()) {
-				file.mkdirs();// 创建文件根目录
-			}
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-			MultipartFile mf = multipartRequest.getFile("file");// 获取上传文件对象
-			String orgName = mf.getOriginalFilename();// 获取文件名
-			fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
-			String savePath = file.getPath() + File.separator + fileName;
-			File savefile = new File(savePath);
-			FileCopyUtils.copy(mf.getBytes(), savefile);
-			String dbpath = bizPath + File.separator + nowday + File.separator + fileName;
-			if (dbpath.contains("\\")) {
-				dbpath = dbpath.replace("\\", "/");
-			}
-			result.setResult(index);
-			result.setMessage(dbpath);
-			result.setSuccess(true);
-		} catch (IOException e) {
-			result.setSuccess(false);
-			result.setMessage(e.getMessage());
-			log.error(e.getMessage(), e);
+		String index = request.getParameter("index");
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		MultipartFile mf = multipartRequest.getFile("file");// 获取上传文件对象
+		String dbpath = OssBootUtil.upload(mf);
+		if (dbpath.contains("\\")) {
 		}
+			dbpath = dbpath.replace("\\", "/");
+		log.info("==========>>>filepath={}",dbpath);
+		result.setResult(index);
+		result.setMessage(dbpath);
+		result.setSuccess(true);
 		return result;
 	}
+
+	
+//	@PostMapping(value = "/upload")
+//	public Result<?> upload(HttpServletRequest request, HttpServletResponse response) {
+//		Result<String> result = new Result<>();
+//		try {
+//			String index = request.getParameter("index");
+//			String ctxPath = uploadpath;
+//			String fileName = null;
+//			String bizPath = "files";
+//			String nowday = new SimpleDateFormat("yyyyMMdd").format(new Date());
+//			File file = new File(ctxPath + File.separator + bizPath + File.separator + nowday);
+//			if (!file.exists()) {
+//				file.mkdirs();// 创建文件根目录
+//			}
+//			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+//			MultipartFile mf = multipartRequest.getFile("file");// 获取上传文件对象
+//			String orgName = mf.getOriginalFilename();// 获取文件名
+//			fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+//			String savePath = file.getPath() + File.separator + fileName;
+//			File savefile = new File(savePath);
+//			FileCopyUtils.copy(mf.getBytes(), savefile);
+//			String dbpath = bizPath + File.separator + nowday + File.separator + fileName;
+//			if (dbpath.contains("\\")) {
+//				dbpath = dbpath.replace("\\", "/");
+//			}
+//			result.setResult(index);
+//			result.setMessage(dbpath);
+//			result.setSuccess(true);
+//		} catch (IOException e) {
+//			result.setSuccess(false);
+//			result.setMessage(e.getMessage());
+//			log.error(e.getMessage(), e);
+//		}
+//		return result;
+//	}
 
 	/**
 	 * 分类上传图片
@@ -239,15 +258,12 @@ public class CommonController {
 	public Result<?> remove(@RequestBody JSONObject jsonObject) {
 		Result<?> result = new Result<>();
 		try {
-			String ctxPath = uploadpath;
 			JSONArray array = jsonObject.getJSONArray("filePaths");
 			if(array != null && array.size() > 0){
 				List<String> list = array.toJavaList(String.class);
 				for(String filePath : list){
-					File file = new File(ctxPath + File.separator + filePath);
-					if (file.exists()) {
-						file.delete();
-					}
+					log.info("=======remove file=========>>>filePath={}",filePath);
+					OssBootUtil.deleteUrl(filePath);
 				}
 			}
 			result.setMessage("文件删除成功！");
@@ -259,6 +275,32 @@ public class CommonController {
 		}
 		return result;
 	}
+
+
+//	@PostMapping(value = "/remove")
+//	public Result<?> remove(@RequestBody JSONObject jsonObject) {
+//		Result<?> result = new Result<>();
+//		try {
+//			String ctxPath = uploadpath;
+//			JSONArray array = jsonObject.getJSONArray("filePaths");
+//			if(array != null && array.size() > 0){
+//				List<String> list = array.toJavaList(String.class);
+//				for(String filePath : list){
+//					File file = new File(ctxPath + File.separator + filePath);
+//					if (file.exists()) {
+//						file.delete();
+//					}
+//				}
+//			}
+//			result.setMessage("文件删除成功！");
+//			result.setSuccess(true);
+//		} catch (Exception e) {
+//			result.setSuccess(false);
+//			result.setMessage(e.getMessage());
+//			log.error(e.getMessage(), e);
+//		}
+//		return result;
+//	}
 
 	/**
 	 * @功能：pdf预览Iframe
