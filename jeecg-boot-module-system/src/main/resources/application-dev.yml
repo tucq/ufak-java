@@ -100,12 +100,6 @@ spring:
           username: root
           password: Dx211e!@#
           driver-class-name: com.mysql.jdbc.Driver
-          # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.jdbc.Driver
   #redis 配置
   redis:
     database: 0
@@ -117,7 +111,7 @@ spring:
         max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
         min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
       shutdown-timeout: 100ms
-    password: 'attiot@2019'
+    password: 'ckjr@2020'
     port: 6379
 #mybatis plus 设置
 mybatis-plus:
@@ -150,10 +144,10 @@ jeecg :
      excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**
   #阿里云oss存储配置
   oss:
-    endpoint: oss-cn-beijing.aliyuncs.com
-    accessKey: WegDpuKzOuPK6D3N
-    secretKey: ??
-    bucketName: jeecgos
+    endpoint: oss-cn-guangzhou.aliyuncs.com
+    accessKey: LTAI5t7EkeqNdieXxqffYE7V
+    secretKey: aglksPrO1minnboQ8XH8rT0iGNIPB5
+    bucketName: oss-bkt-ufak-dev
     staticDomain: ??
   # ElasticSearch 设置
   elasticsearch:
